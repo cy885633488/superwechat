@@ -18,6 +18,14 @@ import android.content.Context;
 
 import com.easemob.EMCallBack;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+
+import cn.ucai.superwechat.bean.Contact;
+import cn.ucai.superwechat.bean.Group;
+import cn.ucai.superwechat.bean.Member;
+import cn.ucai.superwechat.bean.User;
+
 public class SuperWeChatApplication extends Application {
     public static String SERVER_ROOT = "http://10.0.2.2:8080/SuperWeChatServer/Server";
 	public static Context applicationContext;
@@ -107,4 +115,66 @@ public class SuperWeChatApplication extends Application {
 		// 先调用sdk logout，在清理app中自己的数据
 	    hxSDKHelper.logout(isGCM,emCallBack);
 	}
+	/**全局的当前登录用户对象*/
+    private User user;
+	/**全局的当前登录用户的好友列表*/
+	private ArrayList<Contact> contactList = new ArrayList<Contact>();
+	/**全局的当前登录用户的好友集合*/
+	private HashMap<String,Contact> userList = new HashMap<String,Contact>();
+	/**全局的群组集合*/
+	private ArrayList<Group> groupList = new ArrayList<Group>();
+	/**全局的当前公共群列表*/
+	private ArrayList<Group> publicGroupList = new ArrayList<Group>();
+
+    public void setGroupMembers(HashMap<String, ArrayList<Member>> groupMembers) {
+        this.groupMembers = groupMembers;
+    }
+
+    public void setPublicGroupList(ArrayList<Group> publicGroupList) {
+        this.publicGroupList = publicGroupList;
+    }
+
+    public void setGroupList(ArrayList<Group> groupList) {
+        this.groupList = groupList;
+    }
+
+    public void setUserList(HashMap<String, Contact> userList) {
+        this.userList = userList;
+    }
+
+    public void setContactList(ArrayList<Contact> contactList) {
+        this.contactList = contactList;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+
+    public HashMap<String, ArrayList<Member>> getGroupMembers() {
+
+        return groupMembers;
+    }
+
+    public ArrayList<Group> getPublicGroupList() {
+        return publicGroupList;
+    }
+
+    public ArrayList<Group> getGroupList() {
+        return groupList;
+    }
+
+    public HashMap<String, Contact> getUserList() {
+        return userList;
+    }
+
+    public ArrayList<Contact> getContactList() {
+        return contactList;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    /**全局的群组成员列表*/
+	private HashMap<String,ArrayList<Member>> groupMembers = new HashMap<String,ArrayList<Member>>();
 }
