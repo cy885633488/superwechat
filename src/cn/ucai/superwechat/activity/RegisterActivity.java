@@ -26,8 +26,10 @@ import android.widget.Toast;
 import com.easemob.EMError;
 import com.easemob.chat.EMChatManager;
 
+import cn.ucai.superwechat.I;
 import cn.ucai.superwechat.R;
 import cn.ucai.superwechat.SuperWeChatApplication;
+import cn.ucai.superwechat.listener.OnSetAvatarListener;
 
 import com.easemob.exceptions.EaseMobException;
 
@@ -37,11 +39,18 @@ import com.easemob.exceptions.EaseMobException;
  */
 public class RegisterActivity extends BaseActivity {
     private final static String TAG = RegisterActivity.class.getCanonicalName();
-    Context mContext;
+    RegisterActivity mContext;
 	private EditText userNameEditText;
+    private EditText nickNameEditText;
 	private EditText passwordEditText;
 	private EditText confirmPwdEditText;
-    private ImageView mivAvatar;
+
+    ImageView mivAvatar;
+    OnSetAvatarListener mOnSetAvatarListener;
+    String avatarName;
+    String username;
+    String pwd;
+    String nick;
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -57,14 +66,37 @@ public class RegisterActivity extends BaseActivity {
     private void setListener() {
         setRegisterListener();
         setLoginListener();
+        setOnAvatarListener();
     }
 
+    private void setOnAvatarListener() {
+        findViewById(R.id.layout_user_avatar).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mOnSetAvatarListener = new OnSetAvatarListener(mContext,R.id.layout_register,getAvatarName(), I.AVATAR_TYPE_USER_PATH);
+            }
+        });
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode==RESULT_OK){
+            mOnSetAvatarListener.setAvatar(requestCode,data,mivAvatar);
+        }
+    }
+
+    private String getAvatarName() {
+        avatarName = System.currentTimeMillis()+"";
+        return avatarName;
+    }
 
 
     private void initView() {
         userNameEditText = (EditText) findViewById(cn.ucai.superwechat.R.id.username);
         passwordEditText = (EditText) findViewById(cn.ucai.superwechat.R.id.password);
         confirmPwdEditText = (EditText) findViewById(cn.ucai.superwechat.R.id.confirm_password);
+        nickNameEditText = (EditText) findViewById(R.id.nick);
         mivAvatar = (ImageView) findViewById(R.id.iv_avatar);
     }
 
@@ -76,20 +108,29 @@ public class RegisterActivity extends BaseActivity {
         findViewById(R.id.btnRegister).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                final String username = userNameEditText.getText().toString().trim();
-                final String pwd = passwordEditText.getText().toString().trim();
+                username = userNameEditText.getText().toString().trim();
+                nick = nickNameEditText.getText().toString().trim();
+                pwd = passwordEditText.getText().toString().trim();
                 String confirm_pwd = confirmPwdEditText.getText().toString().trim();
                 if (TextUtils.isEmpty(username)) {
-                    Toast.makeText(mContext, getResources().getString(cn.ucai.superwechat.R.string.User_name_cannot_be_empty), Toast.LENGTH_SHORT).show();
                     userNameEditText.requestFocus();
+                    userNameEditText.setError(getResources().getString(cn.ucai.superwechat.R.string.User_name_cannot_be_empty));
+                    return;
+                } else if (!username.matches("[\\w]+[\\w\\d]+")){
+                    userNameEditText.requestFocus();
+                    userNameEditText.setError(getResources().getString(cn.ucai.superwechat.R.string.User_name_cannot_be_wd));
+                    return;
+                } else if (TextUtils.isEmpty(nick)){
+                    nickNameEditText.requestFocus();
+                    nickNameEditText.setError(getResources().getString(R.string.Nick_name_cannot_be_empty));
                     return;
                 } else if (TextUtils.isEmpty(pwd)) {
-                    Toast.makeText(mContext, getResources().getString(cn.ucai.superwechat.R.string.Password_cannot_be_empty), Toast.LENGTH_SHORT).show();
                     passwordEditText.requestFocus();
+                    passwordEditText.setError(getResources().getString(R.string.Password_cannot_be_empty));
                     return;
                 } else if (TextUtils.isEmpty(confirm_pwd)) {
-                    Toast.makeText(mContext, getResources().getString(cn.ucai.superwechat.R.string.Confirm_password_cannot_be_empty), Toast.LENGTH_SHORT).show();
                     confirmPwdEditText.requestFocus();
+                    confirmPwdEditText.setError(getResources().getString(R.string.Confirm_password_cannot_be_empty));
                     return;
                 } else if (!pwd.equals(confirm_pwd)) {
                     Toast.makeText(mContext, getResources().getString(cn.ucai.superwechat.R.string.Two_input_password), Toast.LENGTH_SHORT).show();
