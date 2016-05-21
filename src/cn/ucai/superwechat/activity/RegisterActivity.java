@@ -133,7 +133,8 @@ public class RegisterActivity extends BaseActivity {
                     confirmPwdEditText.setError(getResources().getString(R.string.Confirm_password_cannot_be_empty));
                     return;
                 } else if (!pwd.equals(confirm_pwd)) {
-                    Toast.makeText(mContext, getResources().getString(cn.ucai.superwechat.R.string.Two_input_password), Toast.LENGTH_SHORT).show();
+                    confirmPwdEditText.requestFocus();
+                    confirmPwdEditText.setError(getResources().getString(R.string.Two_input_password));
                     return;
                 }
 
