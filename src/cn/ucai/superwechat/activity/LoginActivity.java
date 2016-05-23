@@ -13,6 +13,9 @@
  */
 package cn.ucai.superwechat.activity;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -40,15 +43,21 @@ import cn.ucai.superwechat.R;
 import cn.ucai.superwechat.applib.controller.HXSDKHelper;
 import com.easemob.chat.EMChatManager;
 import com.easemob.chat.EMGroupManager;
+import com.squareup.okhttp.Callback;
+import com.squareup.okhttp.Request;
+
 import cn.ucai.superwechat.Constant;
 import cn.ucai.superwechat.SuperWeChatApplication;
 import cn.ucai.superwechat.DemoHXSDKHelper;
+import cn.ucai.superwechat.bean.Message;
 import cn.ucai.superwechat.bean.User;
 import cn.ucai.superwechat.data.ApiParams;
 import cn.ucai.superwechat.data.GsonRequest;
+import cn.ucai.superwechat.data.OkHttpUtils;
 import cn.ucai.superwechat.db.EMUserDao;
 import cn.ucai.superwechat.db.UserDao;
 import cn.ucai.superwechat.domain.EMUser;
+import cn.ucai.superwechat.listener.OnSetAvatarListener;
 import cn.ucai.superwechat.task.DownloadContactListTask;
 import cn.ucai.superwechat.task.DownloadGroupListTask;
 import cn.ucai.superwechat.task.DownloadPublicGroupListTask;
@@ -243,6 +252,26 @@ public class LoginActivity extends BaseActivity {
             // ** manually load all local groups and
             EMGroupManager.getInstance().loadAllGroups();
             EMChatManager.getInstance().loadAllConversations();
+            // 下载用户头像
+            final OkHttpUtils<Message> utils = new OkHttpUtils<Message>();
+            utils.url(SuperWeChatApplication.SERVER_ROOT)
+                    .addParam(I.KEY_REQUEST,I.REQUEST_DOWNLOAD_AVATAR)
+                    .addParam(I.AVATAR_TYPE,currentUsername)
+                    .doInBackground(new Callback() {
+                        @Override
+                        public void onFailure(Request request, IOException e) {
+                            Toast.makeText(mContext,e.getMessage(),Toast.LENGTH_LONG).show();
+                        }
+
+                        @Override
+                        public void onResponse(com.squareup.okhttp.Response response) throws IOException {
+                            String avatarPath = I.AVATAR_TYPE_USER_PATH + I.BACKSLASH + currentUsername + I.AVATAR_SUFFIX_JPG;
+                            File file = OnSetAvatarListener.getAvatarFile(LoginActivity.this,avatarPath);
+                            FileOutputStream out = null;
+                            out = new FileOutputStream(file);
+                            utils.downloadFile(response,file,false);
+                        }
+                    }).execute(null);
             // 处理好友和群组
             runOnUiThread(new Runnable() {
                 @Override
