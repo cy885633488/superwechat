@@ -13,25 +13,29 @@ import cn.ucai.superwechat.bean.User;
  * Created by Administrator on 2016/5/19.
  */
 public class UserDao extends SQLiteOpenHelper {
-    static String TABLE_NAME = "user";
+    public static final String TABLE_NAME = "user";
+    public static final String ID = "_id";
     public UserDao(Context context, String name, SQLiteDatabase.CursorFactory factory, int version) {
-        super(context, "user", factory, 1);
+        super(context, "user.db", factory, 1);
+    }
+    public UserDao(Context context){
+        super(context,"user.db",null,1);
     }
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        String sql = "DROP TABLE IF EXISTS " + I.User.TABLE_NAME + " " +
-                "CREATE TABLE" + I.User.TABLE_NAME +
-                I.User.USER_ID + "INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT," +
-                I.User.USER_NAME + "TEXT NOT NULL," +
-                I.User.PASSWORD + "TEXT NOT NULL," +
-                I.User.NICK + "TEXT NOT NULL," +
-                I.User.UN_READ_MSG_COUNT + "INTEGER DEFAULT 0" + ");";
+        String sql = "CREATE TABLE IF NOT EXISTS " + TABLE_NAME +"("+
+                I.User.USER_ID +" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT," +
+                I.User.USER_NAME +" TEXT NOT NULL," +
+                I.User.PASSWORD + " TEXT NOT NULL," +
+                I.User.NICK + " TEXT NOT NULL," +
+                I.User.UN_READ_MSG_COUNT + " INTEGER DEFAULT 0" +
+                ");";
+        db.execSQL(sql);
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-
     }
     public boolean addUser(User user){
         ContentValues values = new ContentValues();
@@ -57,7 +61,7 @@ public class UserDao extends SQLiteOpenHelper {
     }
     public User findUserByUserName(String userName){
         SQLiteDatabase db = getReadableDatabase();
-        String sql = "select * from "+TABLE_NAME + " where " + I.User.USER_NAME + "=?";
+        String sql = "select * from "+TABLE_NAME + " where " + I.User.USER_NAME + " =?";
         Cursor c = db.rawQuery(sql,new String[]{userName});
         if (c.moveToNext()){
             int uid = c.getInt(c.getColumnIndex(I.User.USER_ID));
