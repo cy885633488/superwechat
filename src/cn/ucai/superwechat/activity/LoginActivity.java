@@ -244,6 +244,14 @@ public class LoginActivity extends BaseActivity {
             EMGroupManager.getInstance().loadAllGroups();
             EMChatManager.getInstance().loadAllConversations();
             // 处理好友和群组
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    new DownloadContactListTask(mContext,currentUsername).execute();
+                    new DownloadGroupListTask(mContext,currentUsername).execute();
+                    new DownloadPublicGroupListTask(mContext,currentUsername,I.PAGE_ID_DEFAULT,I.PAGE_SIZE_DEFAULT).execute();
+                }
+            });
             initializeContacts();
         } catch (Exception e) {
             e.printStackTrace();
