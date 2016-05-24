@@ -81,7 +81,12 @@ public class UserUtils {
 			Picasso.with(context).load(cn.ucai.superwechat.R.drawable.default_avatar).into(imageView);
 		}
 	}
-    
+    public static void setCurrentUserAvatar(NetworkImageView imageView){
+        User user = SuperWeChatApplication.getInstance().getUser();
+        if (user!=null){
+            setUserAvatar(getAvatarPath(user.getMUserName().toString()),imageView);
+        }
+    }
     /**
      * 设置用户昵称
      */
