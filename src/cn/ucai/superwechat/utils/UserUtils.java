@@ -55,10 +55,15 @@ public class UserUtils {
             Picasso.with(context).load(cn.ucai.superwechat.R.drawable.default_avatar).into(imageView);
         }
     }
-    public static void setUserBeanAvatar(String username, NetworkImageView networkImageView){
+    public static void setUserBeanAvatar(String username, NetworkImageView networkImageView) {
         Contact contact = getUserBeanInfo(username);
-        if (contact!=null && contact.getMContactCname()!=null){
-            setUserAvatar(getAvatarPath(username),networkImageView);
+        if (contact != null && contact.getMContactCname() != null) {
+            setUserAvatar(getAvatarPath(username), networkImageView);
+        }
+    }
+    public static void setUserBeanAvatar(User user, NetworkImageView networkImageView){
+        if (user!=null && user.getMUserName()!=null){
+            setUserAvatar(getAvatarPath(user.getMUserName()),networkImageView);
         }
     }
     private static void setUserAvatar(String url,NetworkImageView networkImageView){
@@ -110,6 +115,15 @@ public class UserUtils {
             }
         }else {
             textView.setText(username);
+        }
+    }
+    public static void setUserBeanNick(User user,TextView textView){
+        if (user!=null) {
+            if (user.getMUserNick() != null) {
+                textView.setText(user.getMUserNick().toString());
+            } else if (user.getMUserName() != null) {
+                textView.setText(user.getMUserName().toString());
+            }
         }
     }
     /**
