@@ -586,11 +586,30 @@ public class MainActivity extends BaseActivity implements EMEventListener {
 		public void onContactDeleted(final List<String> usernameList) {
 			// 被删除
 			Map<String, EMUser> localUsers = ((DemoHXSDKHelper)HXSDKHelper.getInstance()).getContactList();
+            HashMap<String, Contact> userList = SuperWeChatApplication.getInstance().getUserList();
+            ArrayList<String> toDeleteNames = new ArrayList<String>();
 			for (String username : usernameList) {
 				localUsers.remove(username);
 				userDao.deleteContact(username);
 				inviteMessgeDao.deleteMessage(username);
-			}
+                if (userList.containsKey(username)){
+                    toDeleteNames.add(username);
+                }
+            }
+            if (toDeleteNames.size()>0){
+                for (String username:toDeleteNames){
+                    // http://10.0.2.2:8080/SuperWeChatServer/Server?request=delete_contact&m_contact_user_name=&m_contact_cname=    删除好友地址
+                    try {
+                        String path = new ApiParams()
+                                .with(I.Contact.USER_NAME,SuperWeChatApplication.getInstance().getUserName())
+                                .with(I.Contact.CU_NAME,username)
+                                .getRequestUrl(I.REQUEST_DELETE_CONTACT);
+                        executeRequest(new GsonRequest<Boolean>(path,Boolean.class,reponseDeleteContact(username),errorListener()));
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
 			runOnUiThread(new Runnable() {
 				public void run() {
 					// 如果正在与此用户的聊天页面
@@ -610,7 +629,25 @@ public class MainActivity extends BaseActivity implements EMEventListener {
 
 		}
 
-		@Override
+        private Response.Listener<Boolean> reponseDeleteContact(final String username) {
+            return new Response.Listener<Boolean>() {
+                @Override
+                public void onResponse(Boolean aBoolean) {
+                    if (aBoolean){
+                        SuperWeChatApplication.getInstance().getUserList().remove(username);
+                        SuperWeChatApplication.getInstance().getContactList().remove(
+                                SuperWeChatApplication.getInstance().getUserList().get(username)
+                        );
+                        mContext.sendStickyBroadcast(new Intent("update_contact_list"));
+                        Utils.showToast(mContext,R.string.Delete_successfully,Toast.LENGTH_LONG);
+                    }else {
+                        Utils.showToast(mContext,R.string.Delete_failed,Toast.LENGTH_LONG);
+                    }
+                }
+            };
+        }
+
+        @Override
 		public void onContactInvited(String username, String reason) {
 			
 			// 接到邀请的消息，如果不处理(同意或拒绝)，掉线后，服务器会自动再发过来，所以客户端不需要重复提醒
