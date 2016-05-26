@@ -35,6 +35,7 @@ import cn.ucai.superwechat.DemoHXSDKHelper;
 import cn.ucai.superwechat.bean.User;
 import cn.ucai.superwechat.data.ApiParams;
 import cn.ucai.superwechat.data.GsonRequest;
+import cn.ucai.superwechat.db.UserDao;
 import cn.ucai.superwechat.domain.EMUser;
 import cn.ucai.superwechat.utils.UserUtils;
 import cn.ucai.superwechat.utils.Utils;
@@ -176,7 +177,11 @@ public class UserProfileActivity extends BaseActivity implements OnClickListener
 				});
 		builder.create().show();
 	}
-	
+
+    /**
+     * 个人资料中更改昵称
+     * @param userNick
+     */
 	private void updeteUserNick(String userNick){
 		// http://10.0.2.2:8080/SuperWeChatServer/Server?request=update_nick&m_user_name=&m_user_nick=   更新用户昵称请求地址
 		try {
@@ -230,6 +235,12 @@ public class UserProfileActivity extends BaseActivity implements OnClickListener
 							Toast.makeText(UserProfileActivity.this, getString(cn.ucai.superwechat.R.string.toast_updatenick_success), Toast.LENGTH_SHORT)
 									.show();
 							tvNickName.setText(nickName);
+                            // 更改昵称 同步到全局的currentUserNick 和全局的user，并同步到UserDao
+                            SuperWeChatApplication.currentUserNick = nickName;
+                            User user = SuperWeChatApplication.getInstance().getUser();
+                            user.setMUserNick(nickName);
+                            UserDao dao = new UserDao(mContext);
+                            dao.updateUser(user);
 						}
 					});
 				}
