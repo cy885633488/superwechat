@@ -6,8 +6,10 @@ import java.util.Comparator;
 import java.util.Hashtable;
 import java.util.List;
 
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.text.Editable;
@@ -155,7 +157,7 @@ public class ChatAllHistoryFragment extends Fragment implements View.OnClickList
 				hideSoftKeyboard();
 			}
 		});
-		
+        registerContactListChangedReceiver();
 	}
 
 	void hideSoftKeyboard() {
@@ -296,4 +298,27 @@ public class ChatAllHistoryFragment extends Fragment implements View.OnClickList
     @Override
     public void onClick(View v) {        
     }
+	class ContactListChangedReceiver extends BroadcastReceiver{
+
+		@Override
+		public void onReceive(Context context, Intent intent) {
+			adapter.notifyDataSetChanged();
+		}
+	}
+
+	private ContactListChangedReceiver mReceiver;
+
+	private void registerContactListChangedReceiver(){
+		mReceiver = new ContactListChangedReceiver();
+		IntentFilter filter = new IntentFilter("update_contact_list");
+		getActivity().registerReceiver(mReceiver,filter);
+	}
+
+	@Override
+	public void onDestroy() {
+		super.onDestroy();
+		if (mReceiver == null){
+			getActivity().unregisterReceiver(mReceiver);
+		}
+	}
 }
