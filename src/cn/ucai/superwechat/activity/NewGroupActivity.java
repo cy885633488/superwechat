@@ -287,7 +287,9 @@ public class NewGroupActivity extends BaseActivity {
                 if (message.isResult()){
                     createGroupSuccess(result);
                 }else {
-                    Utils.showToast(mContext,Utils.getResourceString(mContext,message.getMsg()),Toast.LENGTH_LONG);
+                    progressDialog.dismiss();
+                    Utils.showToast(mContext,R.string.Failed_to_create_groups,Toast.LENGTH_LONG);
+                    finish();
                 }
             }
         };
@@ -315,7 +317,7 @@ public class NewGroupActivity extends BaseActivity {
 		SuperWeChatApplication.getInstance().getGroupList().add(result);
 		progressDialog.dismiss();
 		setResult(RESULT_OK);
-        mContext.sendBroadcast(new Intent("update_group_list"));
+        mContext.sendBroadcast(new Intent("update_group_list").putExtra("group",result));
         Utils.showToast(mContext,R.string.Create_groups_Success,Toast.LENGTH_LONG);
         finish();
 	}
