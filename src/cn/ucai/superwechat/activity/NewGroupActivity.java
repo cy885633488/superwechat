@@ -305,8 +305,7 @@ public class NewGroupActivity extends BaseActivity {
         for(int i=0;i<strArr.length;i++){
             sb.append(strArr[i]);
         }
-        String str = sb.substring(sb.lastIndexOf(","));
-        return str;
+        return sb.toString();
     }
 
     /**
