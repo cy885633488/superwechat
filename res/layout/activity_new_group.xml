@@ -96,7 +96,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_centerVertical="true"
-            android:layout_toLeftOf="@id/iv_avatar"
+            android:layout_toLeftOf="@id/group_avatar"
             android:background="@null"
             android:hint="@string/photo"
             android:inputType="textPassword"
