@@ -184,4 +184,19 @@ public class UserUtils {
             }
         }
     }
+    public static void setGroupBeanAvatar(String hxid,NetworkImageView imageView){
+        if (hxid!=null && !hxid.isEmpty()) {
+            setGroupAvatar(getGroupAvatarPath(hxid), imageView);
+        }
+    }
+    private static String getGroupAvatarPath(String hxid){
+        if (hxid==null || hxid.isEmpty()) return null;
+        return I.REQUEST_DOWNLOAD_AVATAR_GROUP + hxid;
+    }
+    private static void setGroupAvatar(String url,NetworkImageView imageView){
+        if (url==null || url.isEmpty()) return;
+        imageView.setDefaultImageResId(R.drawable.group_icon);
+        imageView.setImageUrl(url,RequestManager.getImageLoader());
+        imageView.setErrorImageResId(R.drawable.group_icon);
+    }
 }
