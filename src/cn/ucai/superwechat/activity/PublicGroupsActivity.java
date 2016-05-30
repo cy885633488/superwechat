@@ -30,6 +30,7 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AbsListView;
 import android.widget.ArrayAdapter;
+import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -37,22 +38,30 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.volley.toolbox.NetworkImageView;
 import com.easemob.chat.EMCursorResult;
 import com.easemob.chat.EMGroupInfo;
 import com.easemob.chat.EMGroupManager;
 import com.easemob.exceptions.EaseMobException;
+
+import cn.ucai.superwechat.R;
+import cn.ucai.superwechat.SuperWeChatApplication;
+import cn.ucai.superwechat.bean.Group;
+import cn.ucai.superwechat.task.DownloadPublicGroupListTask;
+import cn.ucai.superwechat.utils.UserUtils;
 
 public class PublicGroupsActivity extends BaseActivity {
 	private ProgressBar pb;
 	private ListView listView;
 	private GroupsAdapter adapter;
 	
-	private List<EMGroupInfo> groupsList;
+	private ArrayList<Group> groupsList;
 	private boolean isLoading;
 	private boolean isFirstLoading = true;
 	private boolean hasMoreData = true;
 	private String cursor;
 	private final int pagesize = 20;
+    private int pageId = 0;
     private LinearLayout footLoadingLayout;
     private ProgressBar footLoadingPB;
     private TextView footLoadingText;
@@ -63,7 +72,7 @@ public class PublicGroupsActivity extends BaseActivity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(cn.ucai.superwechat.R.layout.activity_public_groups);
-        groupsList = new ArrayList<EMGroupInfo>();
+        groupsList = new ArrayList<Group>();
         initView();
         //获取及显示数据
         loadAndShowData();
@@ -85,6 +94,9 @@ public class PublicGroupsActivity extends BaseActivity {
                     if(listView.getCount() != 0){
                         int lasPos = view.getLastVisiblePosition();
                         if(hasMoreData && !isLoading && lasPos == listView.getCount()-1){
+                            pageId++;
+                            new DownloadPublicGroupListTask(PublicGroupsActivity.this,SuperWeChatApplication.getInstance().getUserName(),
+                                    pageId,pagesize).execute();
                             loadAndShowData();
                         }
                     }
@@ -136,39 +148,34 @@ public class PublicGroupsActivity extends BaseActivity {
             public void run() {
                 try {
                     isLoading = true;
-                    final EMCursorResult<EMGroupInfo> result = EMGroupManager.getInstance().getPublicGroupsFromServer(pagesize, cursor);
-                    //获取group list
-                    final List<EMGroupInfo> returnGroups = result.getData();
-                    runOnUiThread(new Runnable() {
-
-                        public void run() {
-                            searchBtn.setVisibility(View.VISIBLE);
-                            groupsList.addAll(returnGroups);
-                            if(returnGroups.size() != 0){
-                                //获取cursor
-                                cursor = result.getCursor();
-                                if(returnGroups.size() == pagesize)
-                                    footLoadingLayout.setVisibility(View.VISIBLE);
-                            }
-                            if(isFirstLoading){
-                                pb.setVisibility(View.INVISIBLE);
-                                isFirstLoading = false;
-                                //设置adapter
-                                adapter = new GroupsAdapter(PublicGroupsActivity.this, 1, groupsList);
-                                listView.setAdapter(adapter);
-                            }else{
-                                if(returnGroups.size() < pagesize){
-                                    hasMoreData = false;
-                                    footLoadingLayout.setVisibility(View.VISIBLE);
-                                    footLoadingPB.setVisibility(View.GONE);
-                                    footLoadingText.setText("No more data");
-                                }
-                                adapter.notifyDataSetChanged();
-                            }
-                            isLoading = false;
+                    ArrayList<Group> publicGroupsList = SuperWeChatApplication.getInstance().getPublicGroupList();
+                    for (Group group:publicGroupsList){
+                        if (!groupsList.contains(group)){
+                            groupsList.add(group);
                         }
-                    });
-                } catch (EaseMobException e) {
+                    }
+                    searchBtn.setVisibility(View.VISIBLE);
+                    if(publicGroupsList.size() != 0){
+                        if(groupsList.size()<publicGroupsList.size())
+                            footLoadingLayout.setVisibility(View.VISIBLE);
+                    }
+                    if(isFirstLoading){
+                        pb.setVisibility(View.INVISIBLE);
+                        isFirstLoading = false;
+                        //设置adapter
+                        adapter = new GroupsAdapter(PublicGroupsActivity.this, 1, groupsList);
+                        listView.setAdapter(adapter);
+                    }else{
+                        if(groupsList.size() < (pageId+1)*pagesize){
+                            hasMoreData = false;
+                            footLoadingLayout.setVisibility(View.VISIBLE);
+                            footLoadingPB.setVisibility(View.GONE);
+                            footLoadingText.setText("No more data");
+                        }
+                        adapter.notifyDataSetChanged();
+                    }
+                    isLoading = false;
+                } catch (Exception e) {
                     e.printStackTrace();
                     runOnUiThread(new Runnable() {
                         public void run() {
@@ -186,23 +193,38 @@ public class PublicGroupsActivity extends BaseActivity {
 	 * adapter
 	 *
 	 */
-	private class GroupsAdapter extends ArrayAdapter<EMGroupInfo> {
+	private class GroupsAdapter extends BaseAdapter {
 
 		private LayoutInflater inflater;
-
-		public GroupsAdapter(Context context, int res, List<EMGroupInfo> groups) {
-			super(context, res, groups);
+        ArrayList<Group> mGroupList;
+		public GroupsAdapter(Context context, int res, ArrayList<Group> groups) {
 			this.inflater = LayoutInflater.from(context);
+            mGroupList = groups;
 		}
 
-		@Override
+        @Override
+        public int getCount() {
+            return mGroupList==null?0:mGroupList.size();
+        }
+
+        @Override
+        public Group getItem(int position) {
+            return mGroupList.get(position);
+        }
+
+        @Override
+        public long getItemId(int position) {
+            return 0;
+        }
+
+        @Override
 		public View getView(int position, View convertView, ViewGroup parent) {
 			if (convertView == null) {
 				convertView = inflater.inflate(cn.ucai.superwechat.R.layout.row_group, null);
 			}
-
-			((TextView) convertView.findViewById(cn.ucai.superwechat.R.id.name)).setText(getItem(position).getGroupName());
-
+            Group group = getItem(position);
+			((TextView) convertView.findViewById(cn.ucai.superwechat.R.id.name)).setText(getItem(position).getMGroupName());
+            UserUtils.setGroupBeanAvatar(group.getMGroupHxid(),(NetworkImageView) convertView.findViewById(R.id.avatar));
 			return convertView;
 		}
 	}
