@@ -45,7 +45,7 @@ public class UserDao extends SQLiteOpenHelper {
         values.put(I.User.USER_ID,user.getMUserId());
         values.put(I.User.USER_NAME,user.getMUserName());
         SQLiteDatabase db = getWritableDatabase();
-        long insert = db.insert(I.User.TABLE_NAME,null,values);
+        long insert = db.insert(TABLE_NAME,null,values);
         return insert>0;
     }
     public boolean updateUser(User user){
@@ -56,7 +56,7 @@ public class UserDao extends SQLiteOpenHelper {
         values.put(I.User.USER_ID,user.getMUserId());
         values.put(I.User.USER_NAME,user.getMUserName());
         SQLiteDatabase db = getWritableDatabase();
-        long insert = db.update(I.User.TABLE_NAME,values," where "+I.User.USER_NAME+"=?",new String[]{user.getMUserName()});
+        long insert = db.update(TABLE_NAME,values," where "+I.User.USER_NAME+"=?",new String[]{user.getMUserName()});
         return insert>0;
     }
     public User findUserByUserName(String userName){

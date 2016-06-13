@@ -244,6 +244,8 @@ public class LoginActivity extends BaseActivity {
         instance.setUserName(currentUsername);
         instance.setPassword(currentPassword);
         SuperWeChatApplication.currentUserNick = user.getMUserNick();
+        UserDao dao = new UserDao(mContext);
+        dao.addUser(user);
     }
 
     private void loginSuccess() {

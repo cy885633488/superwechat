@@ -66,12 +66,8 @@ public class UserUtils {
             setUserAvatar(getAvatarPath(user.getMUserName()),networkImageView);
         }
     }
-    public static void setUserBean2Avatar(String username, NetworkImageView networkImageView){
-        if (username!=null){
-            setUserAvatar(getAvatarPath(username),networkImageView);
-        }
-    }
-    private static void setUserAvatar(String url,NetworkImageView networkImageView){
+
+    public static void setUserAvatar(String url,NetworkImageView networkImageView){
         if (url==null || url.isEmpty()) return;
         networkImageView.setDefaultImageResId(R.drawable.default_avatar);
         networkImageView.setImageUrl(url, RequestManager.getImageLoader());

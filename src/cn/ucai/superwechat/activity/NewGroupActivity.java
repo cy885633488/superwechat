@@ -46,6 +46,7 @@ import cn.ucai.superwechat.data.GsonRequest;
 import cn.ucai.superwechat.data.MultipartRequest;
 import cn.ucai.superwechat.data.OkHttpUtils;
 import cn.ucai.superwechat.data.RequestManager;
+import cn.ucai.superwechat.db.UserDao;
 import cn.ucai.superwechat.listener.OnSetAvatarListener;
 import cn.ucai.superwechat.utils.ImageUtils;
 import cn.ucai.superwechat.utils.UserUtils;
@@ -153,8 +154,6 @@ public class NewGroupActivity extends BaseActivity {
             mOnSetAvatarListener.setAvatar(requestCode,data,ivGroupAvatar);
         }
 	}
-    String[] members = null;
-    String[] memberIds = null;
 	private void createNewGroup(final Intent data) {
         //新建群组
 		final String st2 = getResources().getString(R.string.Failed_to_create_groups);
@@ -165,13 +164,11 @@ public class NewGroupActivity extends BaseActivity {
 				String groupName = groupNameEditText.getText().toString().trim();
 				String desc = introductionEditText.getText().toString();
                 Contact[] contacts = (Contact[]) data.getSerializableExtra("newmembers");
-
+                String[] members = null;
                 if (contacts!=null){
                     members = new String[contacts.length];
-                    memberIds = new String[contacts.length];
                     for (int i=0;i<contacts.length;i++){
-                        members[i] = contacts[i].getMContactCname() + ",";
-                        memberIds[i] = contacts[i].getMContactId() + ",";
+                        members[i] = contacts[i].getMContactCname();
                     }
                 }
                 EMGroup emGroup;
@@ -217,33 +214,41 @@ public class NewGroupActivity extends BaseActivity {
 		// 首先注册环信的账号
 		// 注册远端服务器账号，并上传头像 - - - okhttp
 		// 添加群组成员
-		User user = SuperWeChatApplication.getInstance().getUser();
 		boolean isPublic = checkBox.isChecked();
 		boolean isInvites = memberCheckbox.isChecked();
 		File file = new File(ImageUtils.getAvatarpath(mContext,I.AVATAR_TYPE_GROUP_PATH),avatarName + I.AVATAR_SUFFIX_JPG);
+        Log.i("main",file.getAbsolutePath());
 		OkHttpUtils<Group> okhttp = new OkHttpUtils<Group>();
 		// 创建群组请求地址
 		// http://10.0.2.2:8080/SuperWeChatServer/Server?request=create_group
 		// &m_group_hxid=&m_group_name=&m_group_description=&m_group_owner=&m_group_is_public=&m_group_allow_invites=&m_user_id=
+
+		User user = new UserDao(mContext).findUserByUserName(SuperWeChatApplication.getInstance().getUserName());
+		SuperWeChatApplication.getInstance().setUser(user);
 		okhttp.url(SuperWeChatApplication.SERVER_ROOT)
 				.addParam(I.KEY_REQUEST,I.REQUEST_CREATE_GROUP)
 				.addParam(I.Group.HX_ID,hxid)
 				.addParam(I.Group.NAME,groupName)
 				.addParam(I.Group.DESCRIPTION,desc)
-				.addParam(I.Group.OWNER,user.getMUserName())
+				.addParam(I.Group.OWNER,SuperWeChatApplication.getInstance().getUserName())
 				.addParam(I.Group.IS_PUBLIC,isPublic+"")
 				.addParam(I.Group.ALLOW_INVITES,isInvites+"")
-				.addParam(I.User.USER_ID,user.getMUserId()+"")
+				.addParam(I.User.USER_ID, user.getMUserId()+"")
 				.targetClass(Group.class)
 				.addFile(file)
 				.execute(new OkHttpUtils.OnCompleteListener<Group>() {
 					@Override
-					public void onSuccess(Group result) {
-						if (result.isResult()){
+					public void onSuccess(Group group) {
+						if (group.isResult()){
 							if (contacts!=null){
-								addGroupMembers(contacts,hxid,result);
+								addGroupMembers(contacts,group);
 							}else {
-								createGroupSuccess(result);
+                                progressDialog.dismiss();
+                                SuperWeChatApplication.getInstance().getGroupList().add(group);
+                                Intent intent = new Intent("update_group_list").putExtra("group",group);
+                                Utils.showToast(mContext,R.string.Create_groups_Success,Toast.LENGTH_LONG);
+                                setResult(RESULT_OK,intent);
+                                finish();
 							}
 						} else {
 							progressDialog.dismiss();
@@ -263,63 +268,49 @@ public class NewGroupActivity extends BaseActivity {
      * 添加群组成员
      * @param contacts
      */
-    private void addGroupMembers(Contact[] contacts,String hxid,Group result) {
+    private void addGroupMembers(Contact[] contacts,Group group) {
         // 添加多个群组成员的请求地址
         // http://10.0.2.2:8080/SuperWeChatServer/Server?
         // request=add_group_members&m_member_user_id=&m_member_user_name=&m_member_group_hxid=
         try {
+			String userIds = "";
+			String userNames = "";
+			for (int i=0;i<contacts.length;i++){
+				userIds+=contacts[i].getMContactCid()+",";
+				userNames+=contacts[i].getMContactCname()+",";
+			}
+            Log.i("main",userIds.toString());
+            Log.i("main",userNames.toString());
             String path = new ApiParams()
-                    .with(I.Member.USER_ID,pinJie(memberIds))
-                    .with(I.Member.USER_NAME,pinJie(members))
-                    .with(I.Member.GROUP_HX_ID,hxid)
+                    .with(I.Member.USER_ID,userIds)
+                    .with(I.Member.USER_NAME,userNames)
+                    .with(I.Member.GROUP_HX_ID,group.getMGroupHxid())
                     .getRequestUrl(I.REQUEST_ADD_GROUP_MEMBERS);
             executeRequest(new GsonRequest<Message>(path,Message.class,
-                    responseAddGroupMembersListener(result),errorListener()));
+                    responseAddGroupMembersListener(group),errorListener()));
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    private Response.Listener<Message> responseAddGroupMembersListener(final Group result) {
+    private Response.Listener<Message> responseAddGroupMembersListener(final Group group) {
         return new Response.Listener<Message>() {
             @Override
             public void onResponse(Message message) {
                 if (message.isResult()){
-                    createGroupSuccess(result);
+                    progressDialog.dismiss();
+                    SuperWeChatApplication.getInstance().getGroupList().add(group);
+                    Intent intent = new Intent("update_group_list").putExtra("group",group);
+                    Utils.showToast(mContext,R.string.Create_groups_Success,Toast.LENGTH_LONG);
+                    setResult(RESULT_OK,intent);
                 }else {
                     progressDialog.dismiss();
                     Utils.showToast(mContext,R.string.Failed_to_create_groups,Toast.LENGTH_LONG);
-                    finish();
                 }
+                finish();
             }
         };
     }
-
-    /**
-     * 用于Member的id和name的字符串拼接
-     * @param strArr
-     * @return
-     */
-    private String pinJie(String[] strArr){
-        StringBuilder sb = new StringBuilder();
-        for(int i=0;i<strArr.length;i++){
-            sb.append(strArr[i]);
-        }
-        return sb.toString();
-    }
-
-    /**
-     * 群组创建成功后执行的代码
-     * @param result
-     */
-    private void createGroupSuccess(Group result) {
-		SuperWeChatApplication.getInstance().getGroupList().add(result);
-		progressDialog.dismiss();
-		setResult(RESULT_OK);
-        mContext.sendBroadcast(new Intent("update_group_list").putExtra("group",result));
-        Utils.showToast(mContext,R.string.Create_groups_Success,Toast.LENGTH_LONG);
-        finish();
-	}
 
 	private void setProgressDialog() {
 		String st1 = getResources().getString(R.string.Is_to_create_a_group_chat);

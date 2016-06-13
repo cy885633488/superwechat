@@ -69,7 +69,7 @@ public class PublicGroupsActivity extends BaseActivity {
 	private boolean isFirstLoading = true;
 	private boolean hasMoreData = true;
 	private String cursor;
-	private final int pagesize = 20;
+	private final int pagesize = 9;
     private int pageId = 0;
     private LinearLayout footLoadingLayout;
     private ProgressBar footLoadingPB;
@@ -123,8 +123,8 @@ public class PublicGroupsActivity extends BaseActivity {
     }
 
     private void setScrollListener() {
+        Log.i("main","setScrollListener");
         listView.setOnScrollListener(new OnScrollListener() {
-
             @Override
             public void onScrollStateChanged(AbsListView view, int scrollState) {
                 if(scrollState == OnScrollListener.SCROLL_STATE_IDLE){
@@ -189,6 +189,7 @@ public class PublicGroupsActivity extends BaseActivity {
                     for (Group group:publicGroupsList){
                         if (!groupsList.contains(group)){
                             groupsList.add(group);
+                            Log.i("main","groupList size = "+groupsList.size());
                         }
                     }
                     searchBtn.setVisibility(View.VISIBLE);
@@ -203,7 +204,7 @@ public class PublicGroupsActivity extends BaseActivity {
                         adapter = new GroupsAdapter(PublicGroupsActivity.this, 1, groupsList);
                         listView.setAdapter(adapter);
                     }else{
-                        if(groupsList.size() < (pageId+1)*pagesize){
+                        if(groupsList.size() < (pageId+0)*pagesize){
                             hasMoreData = false;
                             footLoadingLayout.setVisibility(View.VISIBLE);
                             footLoadingPB.setVisibility(View.GONE);
