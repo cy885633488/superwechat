@@ -37,9 +37,9 @@ public class SplashActivity extends BaseActivity {
 		super.onCreate(arg0);
 
 		rootLayout = (RelativeLayout) findViewById(cn.ucai.fulicenter.R.id.splash_root);
-		versionText = (TextView) findViewById(cn.ucai.fulicenter.R.id.tv_version);
+//		versionText = (TextView) findViewById(cn.ucai.fulicenter.R.id.tv_version);
 
-		versionText.setText(getVersion());
+//		versionText.setText(getVersion());
 		AlphaAnimation animation = new AlphaAnimation(0.3f, 1.0f);
 		animation.setDuration(1500);
 		rootLayout.startAnimation(animation);
