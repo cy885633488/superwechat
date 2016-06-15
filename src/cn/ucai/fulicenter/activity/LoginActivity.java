@@ -59,8 +59,6 @@ import cn.ucai.fulicenter.db.UserDao;
 import cn.ucai.fulicenter.domain.EMUser;
 import cn.ucai.fulicenter.listener.OnSetAvatarListener;
 import cn.ucai.fulicenter.task.DownloadContactListTask;
-import cn.ucai.fulicenter.task.DownloadGroupListTask;
-import cn.ucai.fulicenter.task.DownloadPublicGroupListTask;
 import cn.ucai.fulicenter.utils.CommonUtils;
 import cn.ucai.fulicenter.utils.MD5;
 import cn.ucai.fulicenter.utils.Utils;
@@ -279,8 +277,6 @@ public class LoginActivity extends BaseActivity {
                 @Override
                 public void run() {
                     new DownloadContactListTask(mContext,currentUsername).execute();
-                    new DownloadGroupListTask(mContext,currentUsername).execute();
-                    new DownloadPublicGroupListTask(mContext,currentUsername,I.PAGE_ID_DEFAULT,I.PAGE_SIZE_DEFAULT).execute();
                 }
             });
             initializeContacts();

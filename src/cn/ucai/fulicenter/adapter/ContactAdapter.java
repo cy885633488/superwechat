@@ -120,20 +120,6 @@ public class ContactAdapter extends BaseAdapter implements SectionIndexer{
 			}else{
 			    holder.unreadMsgView.setVisibility(View.INVISIBLE);
 			}
-		}else if(username.equals(Constant.GROUP_USERNAME)){
-			//群聊item
-		    holder.nameTextview.setText(user.getMUserNick());
-		    holder.avatar.setDefaultImageResId(R.drawable.groups_icon);
-            holder.avatar.setImageUrl("",RequestManager.getImageLoader());
-            holder.avatar.setErrorImageResId(R.drawable.group_icon);
-		}else if(username.equals(Constant.CHAT_ROOM)){
-            //群聊item
-            holder.nameTextview.setText(user.getMUserNick());
-            holder.avatar.setDefaultImageResId(R.drawable.groups_icon);
-		}else if(username.equals(Constant.CHAT_ROBOT)){
-			//Robot item
-			holder.nameTextview.setText(user.getMUserNick());
-			holder.avatar.setDefaultImageResId(R.drawable.groups_icon);
 		}else{
             // 设置用户昵称
             UserUtils.setUserBeanNick(username,holder.nameTextview);

@@ -36,14 +36,12 @@ import com.easemob.chat.EMGroupManager;
 
 import cn.ucai.fulicenter.I;
 import cn.ucai.fulicenter.activity.NewFriendsMsgActivity;
-import cn.ucai.fulicenter.bean.Group;
 import cn.ucai.fulicenter.bean.User;
 import cn.ucai.fulicenter.data.ApiParams;
 import cn.ucai.fulicenter.data.GsonRequest;
 import cn.ucai.fulicenter.db.InviteMessgeDao;
 import cn.ucai.fulicenter.domain.InviteMessage;
 import cn.ucai.fulicenter.domain.InviteMessage.InviteMesageStatus;
-import cn.ucai.fulicenter.task.DownloadMembersTask;
 import cn.ucai.fulicenter.utils.UserUtils;
 
 public class NewFriendsMsgAdapter extends ArrayAdapter<InviteMessage> {
@@ -182,31 +180,6 @@ public class NewFriendsMsgAdapter extends ArrayAdapter<InviteMessage> {
 					if(msg.getGroupId() == null) {
                         //同意好友请求
                         EMChatManager.getInstance().acceptInvitation(msg.getFrom());
-                    } else {
-                        //同意加群申请
-                        String path = new ApiParams()
-                                .with(I.Member.GROUP_HX_ID,msg.getGroupId())
-                                .with(I.Member.USER_NAME,msg.getFrom())
-                                .getRequestUrl(I.REQUEST_ADD_GROUP_MEMBER_BY_USERNAME);
-                        ((NewFriendsMsgActivity)context).executeRequest(new GsonRequest<Group>(path,Group.class,
-                                responseAddGroupMemberListener(msg.getGroupId()),((NewFriendsMsgActivity)context).errorListener()));
-                        EMGroupManager.getInstance().acceptApplication(msg.getFrom(), msg.getGroupId());
-                        ((Activity) context).runOnUiThread(new Runnable() {
-
-                            @Override
-                            public void run() {
-                                pd.dismiss();
-                                button.setText(str2);
-                                msg.setStatus(InviteMesageStatus.AGREED);
-                                // 更新db
-                                ContentValues values = new ContentValues();
-                                values.put(InviteMessgeDao.COLUMN_NAME_STATUS, msg.getStatus().ordinal());
-                                messgeDao.updateMessage(msg.getId(), values);
-                                button.setBackgroundDrawable(null);
-                                button.setEnabled(false);
-
-                            }
-                        });
                     }
 				} catch (final Exception e) {
 					((Activity) context).runOnUiThread(new Runnable() {
@@ -222,17 +195,6 @@ public class NewFriendsMsgAdapter extends ArrayAdapter<InviteMessage> {
 			}
 		}).start();
 	}
-
-    private Response.Listener<Group> responseAddGroupMemberListener(final String hxid) {
-        return new Response.Listener<Group>() {
-            @Override
-            public void onResponse(Group group) {
-                if (group!=null && group.isResult()){
-                    new DownloadMembersTask(context,hxid);
-                }
-            }
-        };
-    }
 
     private static class ViewHolder {
 		NetworkImageView avator;
