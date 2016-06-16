@@ -22,7 +22,7 @@ android {
     compileSdkVersion 23
     buildToolsVersion "23.0.3"
 
-    defaultConfig{
+    defaultConfig {
         applicationId "cn.ucai.fulicenter"
     }
     sourceSets {
