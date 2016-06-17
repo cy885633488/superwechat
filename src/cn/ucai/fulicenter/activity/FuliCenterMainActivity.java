@@ -8,7 +8,7 @@ import android.widget.TextView;
 
 import cn.ucai.fulicenter.R;
 
-public class FuliCenterMainActivity extends Activity {
+public class FuliCenterMainActivity extends BaseActivity {
     TextView mtvCartHint;
     RadioButton mrbNewGood,mrbBoutique,mrbCategory,mrbCart,mrbPersonCenter;
     RadioButton[] radios = new RadioButton[5];
