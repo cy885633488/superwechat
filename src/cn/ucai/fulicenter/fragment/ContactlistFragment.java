@@ -50,7 +50,7 @@ import android.widget.Toast;
 
 import cn.ucai.fulicenter.I;
 import cn.ucai.fulicenter.R;
-import cn.ucai.fulicenter.SuperWeChatApplication;
+import cn.ucai.fulicenter.FuLiCenterApplication;
 import cn.ucai.fulicenter.activity.AddContactActivity;
 import cn.ucai.fulicenter.activity.ChatActivity;
 import cn.ucai.fulicenter.activity.MainActivity;
@@ -397,8 +397,8 @@ public class ContactlistFragment extends Fragment {
 			@Override
 			public void onResponse(Boolean aBoolean) {
 				if (aBoolean){
-					SuperWeChatApplication.getInstance().getUserList().remove(tobeDeleteUser.getMContactCname());
-					SuperWeChatApplication.getInstance().getContactList().remove(tobeDeleteUser);
+					FuLiCenterApplication.getInstance().getUserList().remove(tobeDeleteUser.getMContactCname());
+					FuLiCenterApplication.getInstance().getContactList().remove(tobeDeleteUser);
 					getActivity().sendStickyBroadcast(new Intent("update_contact_list"));
 					Utils.showToast(getContext(),R.string.Delete_successfully,Toast.LENGTH_LONG);
 				}else {
@@ -496,7 +496,7 @@ public class ContactlistFragment extends Fragment {
 	private void getContactList() {
         mContactList.clear();
         // 获取本地好友列表
-        ArrayList<Contact> contactList = SuperWeChatApplication.getInstance().getContactList();
+        ArrayList<Contact> contactList = FuLiCenterApplication.getInstance().getContactList();
         mContactList.addAll(contactList);
         // 添加"群聊"
         Contact groupUser = new Contact();

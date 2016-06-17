@@ -8,7 +8,7 @@ import android.widget.TextView;
 import cn.ucai.fulicenter.Constant;
 import cn.ucai.fulicenter.I;
 import cn.ucai.fulicenter.R;
-import cn.ucai.fulicenter.SuperWeChatApplication;
+import cn.ucai.fulicenter.FuLiCenterApplication;
 import cn.ucai.fulicenter.applib.controller.HXSDKHelper;
 import cn.ucai.fulicenter.DemoHXSDKHelper;
 import cn.ucai.fulicenter.bean.Contact;
@@ -40,7 +40,7 @@ public class UserUtils {
         return user;
     }
     public static Contact getUserBeanInfo(String username){
-		Contact contact = SuperWeChatApplication.getInstance().getUserList().get(username);
+		Contact contact = FuLiCenterApplication.getInstance().getUserList().get(username);
 		return contact;
 	}
     /**
@@ -90,7 +90,7 @@ public class UserUtils {
 		}
 	}
     public static void setCurrentUserAvatar(NetworkImageView imageView){
-        User user = SuperWeChatApplication.getInstance().getUser();
+        User user = FuLiCenterApplication.getInstance().getUser();
         if (user!=null){
             setUserAvatar(getAvatarPath(user.getMUserName().toString()),imageView);
         }
@@ -137,7 +137,7 @@ public class UserUtils {
     	}
     }
     public static void setCurrentUserBeanNick(TextView textView){
-        User user = SuperWeChatApplication.getInstance().getUser();
+        User user = FuLiCenterApplication.getInstance().getUser();
     	if(user!=null && user.getMUserNick()!=null && textView != null){
     		textView.setText(user.getMUserNick());
     	}

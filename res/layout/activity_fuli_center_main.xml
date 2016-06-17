@@ -6,6 +6,7 @@
     tools:context="cn.ucai.fulicenter.activity.FuliCenterMainActivity"
     android:background="@color/common_bg">
     <LinearLayout
+        android:id="@+id/main_bottom"
         android:layout_width="match_parent"
         android:layout_height="60dp"
         android:orientation="horizontal"
@@ -87,4 +88,9 @@
                 android:checked="false"/>
         </RadioGroup>
     </LinearLayout>
+    <RelativeLayout
+        android:id="@+id/fragment_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@id/main_bottom" />
 </RelativeLayout>

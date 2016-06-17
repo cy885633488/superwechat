@@ -28,7 +28,7 @@ import com.easemob.chat.EMChatManager;
 
 import cn.ucai.fulicenter.I;
 import cn.ucai.fulicenter.R;
-import cn.ucai.fulicenter.SuperWeChatApplication;
+import cn.ucai.fulicenter.FuLiCenterApplication;
 import cn.ucai.fulicenter.bean.Message;
 import cn.ucai.fulicenter.data.OkHttpUtils;
 import cn.ucai.fulicenter.listener.OnSetAvatarListener;
@@ -166,7 +166,7 @@ public class RegisterActivity extends BaseActivity {
         File file = new File(ImageUtils.getAvatarpath(mContext,I.AVATAR_TYPE_USER_PATH),avatarName + I.AVATAR_SUFFIX_JPG);
         OkHttpUtils<Message> okhttp = new OkHttpUtils<Message>();
         // http://10.0.2.2:8080/SuperWeChatServer/Server?request=register&m_user_name=&m_user_nick=&m_user_password=   远端服务器注册地址
-        okhttp.url(SuperWeChatApplication.SERVER_ROOT)
+        okhttp.url(FuLiCenterApplication.SERVER_ROOT)
                 .addParam(I.KEY_REQUEST,I.REQUEST_REGISTER)
                 .addParam(I.User.USER_NAME,username)
                 .addParam(I.User.NICK,nick)
@@ -209,7 +209,7 @@ public class RegisterActivity extends BaseActivity {
                             if (!RegisterActivity.this.isFinishing())
                                 pd.dismiss();
                             // 保存用户名
-                            SuperWeChatApplication.getInstance().setUserName(username);
+                            FuLiCenterApplication.getInstance().setUserName(username);
                             Toast.makeText(getApplicationContext(), getResources().getString(cn.ucai.fulicenter.R.string.Registered_successfully), Toast.LENGTH_LONG).show();
                             finish();
                         }
@@ -245,7 +245,7 @@ public class RegisterActivity extends BaseActivity {
     private void unRegister() {
         // url=http://10.0.2.2:8080/SuperWeChatServer/Server?request=unregister&m_user_name=    取消注册地址
         OkHttpUtils<Message> okhttp = new OkHttpUtils<Message>();
-        okhttp.url(SuperWeChatApplication.SERVER_ROOT)
+        okhttp.url(FuLiCenterApplication.SERVER_ROOT)
                 .addParam(I.KEY_REQUEST,I.REQUEST_UNREGISTER)
                 .addParam(I.User.USER_NAME,username)
                 .targetClass(Message.class)

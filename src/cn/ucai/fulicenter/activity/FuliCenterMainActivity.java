@@ -2,11 +2,14 @@ package cn.ucai.fulicenter.activity;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.view.View;
 import android.widget.RadioButton;
 import android.widget.TextView;
 
 import cn.ucai.fulicenter.R;
+import cn.ucai.fulicenter.fragment.NewGoodFragment;
 
 public class FuliCenterMainActivity extends BaseActivity {
     TextView mtvCartHint;
@@ -15,12 +18,25 @@ public class FuliCenterMainActivity extends BaseActivity {
     private int index;
     // 当前fragment的index
     private int currentTabIndex;
-
+    NewGoodFragment mNewGoodFragment;
+    Fragment[] mFragments;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_fuli_center_main);
+        mFragments = new Fragment[1];
         initview();
+        initFragment();
+        getSupportFragmentManager().beginTransaction()
+                .add(cn.ucai.fulicenter.R.id.fragment_container, mNewGoodFragment)
+//                .add(cn.ucai.fulicenter.R.id.fragment_container, contactListFragment)
+//                .hide(contactListFragment)
+                .show(mNewGoodFragment)
+                .commit();
+    }
+
+    private void initFragment() {
+        mNewGoodFragment = new NewGoodFragment();
     }
 
     private void initview() {
@@ -57,6 +73,12 @@ public class FuliCenterMainActivity extends BaseActivity {
                 break;
         }
         if (currentTabIndex!=index){
+            FragmentTransaction trx = getSupportFragmentManager().beginTransaction();
+            trx.hide(mFragments[currentTabIndex]);
+            if (!mFragments[index].isAdded()) {
+                trx.add(cn.ucai.fulicenter.R.id.fragment_container, mFragments[index]);
+            }
+            trx.show(mFragments[index]).commit();
             setRadioChecked(index);
             currentTabIndex = index;
         }

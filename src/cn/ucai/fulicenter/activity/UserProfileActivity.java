@@ -30,7 +30,7 @@ import com.easemob.EMValueCallBack;
 
 import cn.ucai.fulicenter.I;
 import cn.ucai.fulicenter.R;
-import cn.ucai.fulicenter.SuperWeChatApplication;
+import cn.ucai.fulicenter.FuLiCenterApplication;
 import cn.ucai.fulicenter.applib.controller.HXSDKHelper;
 import cn.ucai.fulicenter.DemoHXSDKHelper;
 import cn.ucai.fulicenter.bean.Message;
@@ -95,8 +95,8 @@ public class UserProfileActivity extends BaseActivity implements OnClickListener
 			headPhotoUpdate.setVisibility(View.GONE);
 			iconRightArrow.setVisibility(View.INVISIBLE);
 		}
-		if (username == null || username.equals(SuperWeChatApplication.getInstance().getUserName())) {
-			tvUsername.setText(SuperWeChatApplication.getInstance().getUserName());
+		if (username == null || username.equals(FuLiCenterApplication.getInstance().getUserName())) {
+			tvUsername.setText(FuLiCenterApplication.getInstance().getUserName());
 			UserUtils.setCurrentUserBeanNick(tvNickName);
 			UserUtils.setCurrentUserAvatar(headAvatar);
 		} else {
@@ -199,7 +199,7 @@ public class UserProfileActivity extends BaseActivity implements OnClickListener
 		// http://10.0.2.2:8080/SuperWeChatServer/Server?request=update_nick&m_user_name=&m_user_nick=   更新用户昵称请求地址
 		try {
 			String path = new ApiParams()
-                    .with(I.User.USER_NAME,SuperWeChatApplication.getInstance().getUserName())
+                    .with(I.User.USER_NAME, FuLiCenterApplication.getInstance().getUserName())
                     .with(I.User.NICK,userNick)
                     .getRequestUrl(I.REQUEST_UPDATE_USER_NICK);
 			executeRequest(new GsonRequest<User>(path,User.class,reponseUpdateNickListener(userNick),errorListener()));
@@ -249,8 +249,8 @@ public class UserProfileActivity extends BaseActivity implements OnClickListener
 									.show();
 							tvNickName.setText(nickName);
                             // 更改昵称 同步到全局的currentUserNick 和全局的user，并同步到UserDao
-                            SuperWeChatApplication.currentUserNick = nickName;
-                            User user = SuperWeChatApplication.getInstance().getUser();
+                            FuLiCenterApplication.currentUserNick = nickName;
+                            User user = FuLiCenterApplication.getInstance().getUser();
                             user.setMUserNick(nickName);
                             UserDao dao = new UserDao(mContext);
                             dao.updateUser(user);
@@ -283,7 +283,7 @@ public class UserProfileActivity extends BaseActivity implements OnClickListener
         if (resultCode==RESULT_OK && requestCode ==REQUEST_CROP_PHOTO){
             dialog = ProgressDialog.show(this, getString(cn.ucai.fulicenter.R.string.dl_update_photo), getString(cn.ucai.fulicenter.R.string.dl_waiting));
             // 清除原有的缓存图片
-            RequestManager.getRequestQueue().getCache().remove(UserUtils.getAvatarPath(SuperWeChatApplication.getInstance().getUserName()));
+            RequestManager.getRequestQueue().getCache().remove(UserUtils.getAvatarPath(FuLiCenterApplication.getInstance().getUserName()));
             updateUserAvatar();
             dialog.show();
         }
@@ -302,7 +302,7 @@ public class UserProfileActivity extends BaseActivity implements OnClickListener
         try {
             url = new ApiParams()
                     .with(I.AVATAR_TYPE,I.AVATAR_TYPE_USER_PATH)
-                    .with(I.User.USER_NAME,SuperWeChatApplication.getInstance().getUserName())
+                    .with(I.User.USER_NAME, FuLiCenterApplication.getInstance().getUserName())
                     .getRequestUrl(I.REQUEST_UPLOAD_AVATAR);
         } catch (Exception e) {
             e.printStackTrace();
