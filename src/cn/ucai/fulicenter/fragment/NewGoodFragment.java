@@ -158,7 +158,7 @@ public class NewGoodFragment extends Fragment {
         mGridLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         mRecyclerView = (RecyclerView) layout.findViewById(R.id.rv_new_good);
         mRecyclerView.setLayoutManager(mGridLayoutManager);
-        mGoodAdapter = new GoodAdapter(mContext,mGoodList);
+        mGoodAdapter = new GoodAdapter(mContext,mGoodList,I.SORT_BY_ADDTIME_DESC);
         mRecyclerView.setAdapter(mGoodAdapter);
     }
 }

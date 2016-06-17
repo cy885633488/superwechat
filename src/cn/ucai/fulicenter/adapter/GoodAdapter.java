@@ -11,6 +11,8 @@ import android.widget.TextView;
 import com.android.volley.toolbox.NetworkImageView;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 
 import cn.ucai.fulicenter.I;
 import cn.ucai.fulicenter.R;
@@ -27,6 +29,44 @@ public class GoodAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>{
     FooterViewHolder mFooterHolder;
     String footerText;
     private boolean isMore;
+    int sortBy;
+
+    public void setSortBy(int sortBy){
+        this.sortBy = sortBy;
+        sort(sortBy);
+        notifyDataSetChanged();
+    }
+
+    private void sort(final int sortBy) {
+        Collections.sort(mGoodList, new Comparator<NewGoodBean>() {
+            @Override
+            public int compare(NewGoodBean g1, NewGoodBean g2) {
+                int result = 0;
+                switch (sortBy){
+                    case I.SORT_BY_ADDTIME_ASC:
+                        result = (int) (g1.getAddTime()-g2.getAddTime());
+                        break;
+                    case I.SORT_BY_ADDTIME_DESC:
+                        result = (int) (g2.getAddTime()-g1.getAddTime());
+                        break;
+                    case I.SORT_BY_PRICE_ASC:
+                    {
+                        int p1 = converPrice(g1.getCurrencyPrice());
+                        int p2 = converPrice(g2.getCurrencyPrice());
+                        result = p2-p1;
+                    }
+                    break;
+                }
+                return result;
+            }
+
+            private int converPrice(String currencyPrice) {
+                currencyPrice = currencyPrice.substring(currencyPrice.indexOf("￥")+1);
+                int p1 = Integer.parseInt(currencyPrice);
+                return p1;
+            }
+        });
+    }
 
     public void setFooterText(String footerText){
         this.footerText = footerText;
@@ -41,9 +81,10 @@ public class GoodAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>{
         isMore = more;
     }
 
-    public GoodAdapter(Context mContext, ArrayList<NewGoodBean> mGoodList) {
+    public GoodAdapter(Context mContext, ArrayList<NewGoodBean> mGoodList,int sortBy) {
         this.mContext = mContext;
         this.mGoodList = mGoodList;
+        this.sortBy = sortBy;
     }
 
     @Override
@@ -93,6 +134,7 @@ public class GoodAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>{
         if (mGoodList!=null && mGoodList.isEmpty()){
             mGoodList.clear();
             mGoodList.addAll(list);
+            setSortBy(sortBy);
             notifyDataSetChanged();
         }
     }
@@ -101,6 +143,7 @@ public class GoodAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>{
         for (NewGoodBean ngb:mGoodList){
             if (!mGoodList.contains(ngb)){
                 mGoodList.add(ngb);
+                setSortBy(sortBy);
                 notifyDataSetChanged();
             }
         }
