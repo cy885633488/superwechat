@@ -2,6 +2,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="#fff">
     <RelativeLayout
         android:layout_width="match_parent"
@@ -46,7 +47,8 @@
     </RelativeLayout>
     <LinearLayout
         android:id="@+id/ll_shangpingxiangqing"
-        android:layout_width="250dp"
+        android:layout_width="match_parent"
+        android:padding="50dp"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
         android:orientation="vertical">
@@ -77,17 +79,22 @@
             android:orientation="vertical"
             android:layout_gravity="center_horizontal"
             android:layout_marginTop="20dp">
-            <cn.ucai.fulicenter.activity.SlideAutoLoopView
+            <cn.ucai.fulicenter.view.SlideAutoLoopView
                 android:layout_width="wrap_content"
                 android:layout_height="150dp"
                 android:layout_gravity="center_horizontal"
-                android:background="#fff">
-            </cn.ucai.fulicenter.activity.SlideAutoLoopView>
-            <cn.ucai.fulicenter.activity.FlowIndicator
-                android:layout_width="wrap_content"
+                android:background="@color/good_detail_bg_white">
+            </cn.ucai.fulicenter.view.SlideAutoLoopView>
+            <cn.ucai.fulicenter.view.FlowIndicator
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
-                android:background="#fff"/>
+                android:background="#fff"
+                app:r="5dp"
+                app:count="5"
+                app:focus="0"
+                app:focus_color="@color/good_detaul_flow_indicator_focus"
+                app:space="3dp"/>
         </LinearLayout>
     </LinearLayout>
     <WebView
