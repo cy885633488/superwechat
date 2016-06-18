@@ -17,11 +17,25 @@ public class BitmapLruCache extends LruCache<String, Bitmap> implements ImageLoa
 
 	@Override
 	public Bitmap getBitmap(String url) {
-		return get(url);
+		Bitmap bitmap = get(url);
+		// 如果没有在内存中找到则去磁盘缓存查找
+		if (bitmap==null){
+			bitmap = RequestManager.getBitmap(url);
+			// 如果磁盘缓存找到，添加到内存缓存中
+			if (bitmap!=null){
+				putBitmap(url,bitmap);
+			}
+		}
+		return bitmap;
 	}
 
 	@Override
 	public void putBitmap(String url, Bitmap bitmap) {
-		put(url, bitmap);
+		//在geiBitmap方法返回null是，Volley启动下载图片的任务下载图片
+		//成功后悔调用此方法
+		//原生的内存缓存添加图片到内存中的方法
+		put(url,bitmap);
+		//将图片同时添加到磁盘缓存中
+		RequestManager.putBitmap(url,bitmap);
 	}
 }
