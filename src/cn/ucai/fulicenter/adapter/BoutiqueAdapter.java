@@ -7,7 +7,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -20,9 +19,8 @@ import java.util.Comparator;
 import cn.ucai.fulicenter.D;
 import cn.ucai.fulicenter.I;
 import cn.ucai.fulicenter.R;
-import cn.ucai.fulicenter.activity.GoodDetailsActivity;
+import cn.ucai.fulicenter.activity.BoutiqueChildActivity;
 import cn.ucai.fulicenter.bean.BoutiqueBean;
-import cn.ucai.fulicenter.bean.NewGoodBean;
 import cn.ucai.fulicenter.utils.ImageUtils;
 import cn.ucai.fulicenter.view.FooterViewHolder;
 
@@ -94,8 +92,9 @@ public class BoutiqueAdapter extends RecyclerView.Adapter<ViewHolder> {
             boutiqueHolder.layoutBoutique.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    mContext.startActivity(new Intent(mContext, GoodDetailsActivity.class)
-                            .putExtra(D.Boutique.KEY_ID,boutique.getId()));
+                    mContext.startActivity(new Intent(mContext, BoutiqueChildActivity.class)
+                    .putExtra(I.Boutique.NAME,boutique.getName())
+                    .putExtra(I.Boutique.CAT_ID,boutique.getId()));
                 }
             });
         }

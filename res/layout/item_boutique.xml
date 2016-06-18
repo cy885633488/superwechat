@@ -20,6 +20,7 @@
         android:textColor="#ff0093"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:lines="3"
         android:text="商品名称商品名称商品名称商品名称商品名称商品名称商品名称商品名称"/>
     <TextView
         android:id="@+id/tv_boutique_2"
@@ -31,6 +32,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textColor="#000"
+        android:lines="3"
         android:text="商品功能"/>
     <TextView
         android:id="@+id/tv_boutique_3"
@@ -42,5 +44,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textColor="#403f3f"
+        android:lines="3"
         android:text="不晓得是商品的啥子"/>
 </RelativeLayout>
