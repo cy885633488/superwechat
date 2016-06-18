@@ -1,106 +1,133 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:background="#fff">
+    android:background="@color/good_detail_bg">
     <RelativeLayout
+        android:id="@+id/layout_title"
         android:layout_width="match_parent"
-        android:layout_height="40dp"
-        android:background="#FF4500">
+        android:layout_height="35dp"
+        android:background="@color/good_detail_title_bg">
+        <include layout="@layout/common_head_title"/>
         <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/back"
-            android:layout_marginTop="8dp"/>
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="商品详情"
-            android:layout_centerInParent="true"
-            android:textSize="15sp"
-            android:textColor="#fff"/>
-        <LinearLayout
+            android:id="@+id/ivShare"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
-            android:layout_marginTop="8dp">
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@drawable/bg_cart_selected"
-                android:layout_gravity="center_vertical"/>
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@drawable/bg_collect_in"
-                android:layout_marginLeft="10dp"
-                android:layout_gravity="center_vertical"/>
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@drawable/bg_share_nor"
-                android:layout_marginLeft="10dp"
-                android:layout_marginRight="10dp"
-                android:layout_gravity="center_vertical"/>
-        </LinearLayout>
-    </RelativeLayout>
-    <LinearLayout
-        android:id="@+id/ll_shangpingxiangqing"
-        android:layout_width="match_parent"
-        android:padding="50dp"
-        android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
-        android:orientation="vertical">
-        <TextView
+            android:layout_centerVertical="true"
+            android:padding="5dp"
+            android:src="@drawable/selector_share_bg"/>
+        <ImageView
+            android:id="@+id/ivCollect"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="ccccc"
-            android:textColor="#000"/>
+            android:layout_centerVertical="true"
+            android:layout_toLeftOf="@id/ivShare"
+            android:padding="5dp"
+            android:src="@drawable/bg_collect_in"/>
         <RelativeLayout
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="5dp">
-            <TextView
+            android:layout_height="match_parent"
+            android:layout_toLeftOf="@id/ivCollect"
+            android:layout_centerVertical="true"
+            android:padding="5dp">
+            <ImageView
+                android:id="@+id/ivAddCart"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="商品名称"
-                android:textColor="#000"/>
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:src="@drawable/bg_cart_selected"/>
             <TextView
+                android:id="@+id/tvCartCount"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="$200"
-                android:textColor="#ff00"
-                android:layout_alignParentRight="true"/>
+                android:layout_alignParentRight="true"
+                android:layout_alignParentTop="true"
+                android:gravity="center"
+                android:text="1"
+                android:textColor="#f00"
+                android:textSize="12sp"
+                android:visibility="invisible"/>
         </RelativeLayout>
-        <LinearLayout
+    </RelativeLayout>
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/layout_title"
+        android:padding="50dp"
+        android:layout_marginTop="15dp"
+        android:background="@color/good_detail_bg_white">
+        <TextView
+            android:id="@+id/tvGoodEnglishName"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginTop="20dp">
+            android:text="EnglishName"
+            android:textColor="#000"/>
+        <TextView
+            android:id="@+id/tvGoodName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/tvGoodEnglishName"
+            android:layout_marginTop="5dp"
+            android:text="GoodName"
+            android:textColor="#000"/>
+        <TextView
+            android:id="@+id/tvShopPrice"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:textColor="#000"/>
+        <TextView
+            android:id="@+id/tvCurrencyPrice"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_below="@id/tvShopPrice"
+            android:text="￥1,300"
+            android:textColor="@color/good_detail_currency_price"/>
+        <RelativeLayout
+            android:id="@+id/layout_banner"
+            android:layout_width="match_parent"
+            android:layout_height="190dp"
+            android:layout_below="@id/tvCurrencyPrice"
+            android:layout_marginTop="40dp">
             <cn.ucai.fulicenter.view.SlideAutoLoopView
-                android:layout_width="wrap_content"
-                android:layout_height="150dp"
-                android:layout_gravity="center_horizontal"
-                android:background="@color/good_detail_bg_white">
-            </cn.ucai.fulicenter.view.SlideAutoLoopView>
+                android:id="@+id/salv"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@color/good_detail_bg_white"/>
             <cn.ucai.fulicenter.view.FlowIndicator
+                android:id="@+id/indicator"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                android:background="#fff"
+                android:layout_alignParentBottom="true"
                 app:r="5dp"
-                app:count="5"
+                app:count="4"
                 app:focus="0"
                 app:focus_color="@color/good_detaul_flow_indicator_focus"
                 app:space="3dp"/>
+        </RelativeLayout>
+        <LinearLayout
+            android:id="@+id/layoutColor"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/layout_banner"
+            android:orientation="horizontal">
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:orientation="horizontal"/>
         </LinearLayout>
-    </LinearLayout>
-    <WebView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/ll_shangpingxiangqing"
-        android:background="#fff">
-    </WebView>
+        <WebView
+            android:id="@+id/wvGoodBrief"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/layoutColor"
+            android:layout_margin="10dp"
+            android:background="@color/good_detail_bg_white">
+        </WebView>
+    </RelativeLayout>
 </RelativeLayout>

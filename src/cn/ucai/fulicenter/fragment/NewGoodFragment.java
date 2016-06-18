@@ -1,6 +1,5 @@
 package cn.ucai.fulicenter.fragment;
 
-import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -27,122 +26,144 @@ import cn.ucai.fulicenter.data.GsonRequest;
 import cn.ucai.fulicenter.utils.Utils;
 
 /**
- * Created by Administrator on 2016/6/16.
+ * Created by clawpo on 16/6/15.
  */
 public class NewGoodFragment extends Fragment {
+    public static final String TAG = NewGoodFragment.class.getName();
+
     FuliCenterMainActivity mContext;
     ArrayList<NewGoodBean> mGoodList;
-    int pageId = 0;
-    GoodAdapter mGoodAdapter;
+    GoodAdapter mAdapter;
+    private  int pageId = 0;
     private int action = I.ACTION_DOWNLOAD;
+    String path;
+
+    /** 下拉刷新控件*/
     SwipeRefreshLayout mSwipeRefreshLayout;
     RecyclerView mRecyclerView;
     TextView mtvHint;
     GridLayoutManager mGridLayoutManager;
-    String path;
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         mContext = (FuliCenterMainActivity) getActivity();
-        View layout = View.inflate(mContext,R.layout.fragment_new_goods,null);
+        View layout = View.inflate(mContext, R.layout.fragment_new_goods,null);
         mGoodList = new ArrayList<NewGoodBean>();
         initView(layout);
         setListener();
         initData();
         return layout;
     }
-
     private void setListener() {
         setPullDownRefreshListener();
         setPullUpRefreshListener();
     }
 
+    /**
+     * 上拉刷新事件监听
+     */
     private void setPullUpRefreshListener() {
-        mRecyclerView.setOnScrollListener(new RecyclerView.OnScrollListener() {
-            int lastItemPosition;
-            @Override
-            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
-                super.onScrollStateChanged(recyclerView, newState);
-                if (newState==RecyclerView.SCROLL_STATE_IDLE &&
-                        lastItemPosition==mGoodAdapter.getItemCount()-1){
-                    if (mGoodAdapter.isMore()){
-                        mSwipeRefreshLayout.setRefreshing(true);
-                        action = I.ACTION_PULL_DOWN;
-                        pageId += I.PAGE_SIZE_DEFAULT;
-                        getPath(pageId);
-                        mContext.executeRequest(new GsonRequest<NewGoodBean[]>(path,NewGoodBean[].class,
-                                reponseDownloadNewGoodsListener(),mContext.errorListener()));
+        mRecyclerView.setOnScrollListener(
+                new RecyclerView.OnScrollListener() {
+                    int lastItemPosition;
+                    @Override
+                    public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+                        super.onScrollStateChanged(recyclerView, newState);
+                        if(newState == RecyclerView.SCROLL_STATE_IDLE &&
+                                lastItemPosition == mAdapter.getItemCount()-1){
+                            if(mAdapter.isMore()){
+                                mSwipeRefreshLayout.setRefreshing(true);
+                                action = I.ACTION_PULL_UP;
+                                pageId +=I.PAGE_SIZE_DEFAULT;
+                                getPath(pageId);
+                                mContext.executeRequest(new GsonRequest<NewGoodBean[]>(path,
+                                        NewGoodBean[].class,responseDownloadNewGoodListener(),
+                                        mContext.errorListener()));
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                        super.onScrolled(recyclerView, dx, dy);
+                        //获取最后列表项的下标
+                        lastItemPosition = mGridLayoutManager.findLastVisibleItemPosition();
+                        //解决RecyclerView和SwipeRefreshLayout共用存在的bug
+                        mSwipeRefreshLayout.setEnabled(mGridLayoutManager
+                                .findFirstCompletelyVisibleItemPosition() == 0);
                     }
                 }
-            }
-
-            @Override
-            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-                super.onScrolled(recyclerView, dx, dy);
-                lastItemPosition = mGridLayoutManager.findLastVisibleItemPosition();
-                mSwipeRefreshLayout.setEnabled(mGridLayoutManager
-                        .findFirstCompletelyVisibleItemPosition()==0);
-            }
-        });
+        );
     }
 
+    /**
+     * 下拉刷新事件监听
+     */
     private void setPullDownRefreshListener() {
-        mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                mtvHint.setVisibility(View.VISIBLE);
-                pageId = 0;
-                action = I.ACTION_PULL_DOWN;
-                getPath(pageId);
-                mContext.executeRequest(new GsonRequest<NewGoodBean[]>(path,NewGoodBean[].class,
-                        reponseDownloadNewGoodsListener(),mContext.errorListener()));
-            }
-        });
+        mSwipeRefreshLayout.setOnRefreshListener(
+                new SwipeRefreshLayout.OnRefreshListener(){
+                    @Override
+                    public void onRefresh() {
+                        mtvHint.setVisibility(View.VISIBLE);
+                        pageId = 0;
+                        action = I.ACTION_PULL_DOWN;
+                        getPath(pageId);
+                        mContext.executeRequest(new GsonRequest<NewGoodBean[]>(path,
+                                NewGoodBean[].class,responseDownloadNewGoodListener(),
+                                mContext.errorListener()));
+                    }
+                }
+        );
     }
 
     private void initData() {
-        getPath(pageId);
-        mContext.executeRequest(new GsonRequest<NewGoodBean[]>(path,NewGoodBean[].class,
-                reponseDownloadNewGoodsListener(),mContext.errorListener()));
+        try {
+            getPath(pageId);
+            mContext.executeRequest(new GsonRequest<NewGoodBean[]>(path,
+                    NewGoodBean[].class,responseDownloadNewGoodListener(),
+                    mContext.errorListener()));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+    private String getPath(int pageId){
+        try {
+            path = new ApiParams()
+                    .with(I.NewAndBoutiqueGood.CAT_ID, I.CAT_ID+"")
+                    .with(I.PAGE_ID, pageId+"")
+                    .with(I.PAGE_SIZE, I.PAGE_SIZE_DEFAULT+"")
+                    .getRequestUrl(I.REQUEST_FIND_NEW_BOUTIQUE_GOODS);
+            return path;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
-    private Response.Listener<NewGoodBean[]> reponseDownloadNewGoodsListener() {
+    private Response.Listener<NewGoodBean[]> responseDownloadNewGoodListener() {
         return new Response.Listener<NewGoodBean[]>() {
             @Override
             public void onResponse(NewGoodBean[] newGoodBeen) {
-                if (newGoodBeen!=null){
-                    mGoodAdapter.setMore(true);
+                if(newGoodBeen!=null) {
+                    mAdapter.setMore(true);
                     mSwipeRefreshLayout.setRefreshing(false);
                     mtvHint.setVisibility(View.GONE);
-                    mGoodAdapter.setFooterText(getResources().getString(R.string.load_more));
+                    mAdapter.setFooterText(getResources().getString(R.string.load_more));
+                    //将数组转换为集合
                     ArrayList<NewGoodBean> list = Utils.array2List(newGoodBeen);
-                    if (action==I.ACTION_DOWNLOAD || action==I.ACTION_PULL_DOWN){
-                        mGoodAdapter.initList(list);
-                    }else if (action==I.ACTION_PULL_UP){
-                        mGoodAdapter.addItem(list);
+                    if (action == I.ACTION_DOWNLOAD || action == I.ACTION_PULL_DOWN) {
+                        mAdapter.initItems(list);
+                    } else if (action == I.ACTION_PULL_UP) {
+                        mAdapter.addItems(list);
                     }
-                    if (newGoodBeen.length<I.PAGE_SIZE_DEFAULT){
-                        mGoodAdapter.setMore(false);
-                        mGoodAdapter.setFooterText(getResources().getString(R.string.no_more));
+                    if(newGoodBeen.length<I.PAGE_SIZE_DEFAULT){
+                        mAdapter.setMore(false);
+                        mAdapter.setFooterText(getResources().getString(R.string.no_more));
                     }
                 }
             }
         };
-    }
-
-    private String getPath(int pageId) {
-        // http://10.0.2.2/ FuLiCenterServer/Server?
-      //  request=find_new_boutique_goods&cat_id=&page_id=&page_size=
-        try {
-            path = new ApiParams()
-                    .with(I.NewAndBoutiqueGood.CAT_ID,I.CAT_ID+"")
-                    .with(I.PAGE_SIZE,I.PAGE_SIZE_DEFAULT+"")
-                    .with(I.PAGE_ID,pageId+"")
-                    .getRequestUrl(I.REQUEST_FIND_NEW_BOUTIQUE_GOODS);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return path;
     }
 
     private void initView(View layout) {
@@ -154,11 +175,12 @@ public class NewGoodFragment extends Fragment {
                 R.color.google_yellow
         );
         mtvHint = (TextView) layout.findViewById(R.id.fragment_tv_hint);
-        mGridLayoutManager = new GridLayoutManager(mContext,I.COLUM_NUM);
+        mGridLayoutManager = new GridLayoutManager(mContext, I.COLUM_NUM);
         mGridLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         mRecyclerView = (RecyclerView) layout.findViewById(R.id.rv_new_good);
+        mRecyclerView.setHasFixedSize(true);
         mRecyclerView.setLayoutManager(mGridLayoutManager);
-        mGoodAdapter = new GoodAdapter(mContext,mGoodList,I.SORT_BY_ADDTIME_DESC);
-        mRecyclerView.setAdapter(mGoodAdapter);
+        mAdapter = new GoodAdapter(mContext,mGoodList,I.SORT_BY_ADDTIME_DESC);
+        mRecyclerView.setAdapter(mAdapter);
     }
 }
