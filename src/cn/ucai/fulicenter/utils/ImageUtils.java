@@ -84,7 +84,7 @@ public class ImageUtils {
 		setThumb(path,ivColor);
 	}
 
-	private static void setThumb(String path, NetworkImageView niv) {
+	public static void setThumb(String path, NetworkImageView niv) {
 		niv.setImageUrl(path, RequestManager.getImageLoader());
 		niv.setDefaultImageResId(R.drawable.nopic);
 		niv.setErrorImageResId(R.drawable.nopic);

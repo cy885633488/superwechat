@@ -10,6 +10,7 @@ import android.widget.TextView;
 
 import cn.ucai.fulicenter.R;
 import cn.ucai.fulicenter.fragment.BoutiqueFragment;
+import cn.ucai.fulicenter.fragment.CategoryFragment;
 import cn.ucai.fulicenter.fragment.NewGoodFragment;
 
 public class FuliCenterMainActivity extends BaseActivity {
@@ -21,18 +22,21 @@ public class FuliCenterMainActivity extends BaseActivity {
     private int currentTabIndex;
     NewGoodFragment mNewGoodFragment;
     BoutiqueFragment mBoutiqueFragment;
+    CategoryFragment mCategoryFragment;
     Fragment[] mFragments;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_fuli_center_main);
-        mFragments = new Fragment[2];
+        mFragments = new Fragment[3];
         initview();
         initFragment();
         getSupportFragmentManager().beginTransaction()
                 .add(cn.ucai.fulicenter.R.id.fragment_container, mNewGoodFragment)
                 .add(cn.ucai.fulicenter.R.id.fragment_container, mBoutiqueFragment)
                 .hide(mBoutiqueFragment)
+                .add(cn.ucai.fulicenter.R.id.fragment_container, mCategoryFragment)
+                .hide(mCategoryFragment)
                 .show(mNewGoodFragment)
                 .commit();
     }
@@ -40,8 +44,10 @@ public class FuliCenterMainActivity extends BaseActivity {
     private void initFragment() {
         mNewGoodFragment = new NewGoodFragment();
         mBoutiqueFragment = new BoutiqueFragment();
+        mCategoryFragment = new CategoryFragment();
         mFragments[0] = mNewGoodFragment;
         mFragments[1] = mBoutiqueFragment;
+        mFragments[2] = mCategoryFragment;
     }
 
     private void initview() {

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="60dp">
+    <com.android.volley.toolbox.NetworkImageView
+        android:id="@+id/ivGroupThumb"
+        android:layout_marginLeft="20dp"
+        android:layout_width="60dp"
+        android:layout_height="match_parent"
+        android:src="@drawable/nopic"/>
+    <TextView
+        android:id="@+id/tvGroupName"
+        android:layout_toRightOf="@id/ivGroupThumb"
+        android:layout_marginLeft="20dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Group名称"
+        android:textSize="25sp"
+        android:layout_centerVertical="true"/>
+    <ImageView
+        android:id="@+id/ivIndicator"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="20dp"
+        android:src="@drawable/expand_on"
+        android:layout_centerVertical="true"/>
+</RelativeLayout>
