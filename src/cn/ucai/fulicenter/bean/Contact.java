@@ -85,16 +85,19 @@ public class Contact extends User implements java.io.Serializable {
 	@Override
 	public boolean equals(Object o) {
 		if (this == o) return true;
-		if (o == null || getClass() != o.getClass()) return false;
+		if (!(o instanceof Contact)) return false;
+		if (!super.equals(o)) return false;
 
 		Contact contact = (Contact) o;
 
-		return mcontactId.equals(contact.mcontactId);
+		return getMContactId().equals(contact.getMContactId());
 
 	}
 
 	@Override
 	public int hashCode() {
-		return mcontactId.hashCode();
+		int result = super.hashCode();
+		result = 31 * result + getMContactId().hashCode();
+		return result;
 	}
 }

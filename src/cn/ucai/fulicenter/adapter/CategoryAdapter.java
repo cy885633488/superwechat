@@ -99,7 +99,7 @@ public class CategoryAdapter extends BaseExpandableListAdapter {
     }
 
     @Override
-    public View getChildView(int groupPosition, int childPosition, boolean isLastChild,
+    public View getChildView(final int groupPosition, int childPosition, boolean isLastChild,
                              View layout, ViewGroup parent) {
         ViewChildHolder holder = null;
         if (layout==null){
@@ -122,7 +122,9 @@ public class CategoryAdapter extends BaseExpandableListAdapter {
             @Override
             public void onClick(View v) {
                 mContext.startActivity(new Intent(mContext, CategoryChildActivity.class)
-                        .putExtra(I.CategoryChild.CAT_ID,child.getId()));
+                .putExtra(I.CategoryChild.CAT_ID,child.getId())
+                .putExtra(I.CategoryGroup.NAME,mCategoryGroupList.get(groupPosition).getName())
+                .putExtra("childList",(ArrayList<CategoryChildBean>)mCategoryChildList.get(groupPosition)));
             }
         });
         return layout;

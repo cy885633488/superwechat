@@ -14,6 +14,8 @@
 package cn.ucai.fulicenter.utils;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Environment;
 
 import com.android.volley.toolbox.*;
@@ -88,5 +90,15 @@ public class ImageUtils {
 		niv.setImageUrl(path, RequestManager.getImageLoader());
 		niv.setDefaultImageResId(R.drawable.nopic);
 		niv.setErrorImageResId(R.drawable.nopic);
+	}
+
+	public static int getDrawableWidth(Context context,int resId){
+		Bitmap bitmap = BitmapFactory.decodeResource(context.getResources(), resId);
+		return bitmap.getWidth();
+	}
+
+	public static int getDrawableHeight(Context context,int resId){
+		Bitmap bitmap = BitmapFactory.decodeResource(context.getResources(), resId);
+		return bitmap.getHeight();
 	}
 }
