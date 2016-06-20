@@ -121,6 +121,8 @@ public class FuLiCenterApplication extends Application {
 	private ArrayList<Contact> contactList = new ArrayList<Contact>();
 	/**全局的当前登录用户的好友集合*/
 	private HashMap<String,Contact> userList = new HashMap<String,Contact>();
+	/**全局的当前登录用户的收藏商品数量*/
+	private int collectCount;
 
     public void setUserList(HashMap<String, Contact> userList) {
         this.userList = userList;
@@ -146,4 +148,11 @@ public class FuLiCenterApplication extends Application {
         return user;
     }
 
+	public int getCollectCount() {
+		return collectCount;
+	}
+
+	public void setCollectCount(int collectCount) {
+		this.collectCount = collectCount;
+	}
 }

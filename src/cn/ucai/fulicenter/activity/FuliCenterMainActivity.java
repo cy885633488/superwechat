@@ -12,6 +12,7 @@ import cn.ucai.fulicenter.R;
 import cn.ucai.fulicenter.fragment.BoutiqueFragment;
 import cn.ucai.fulicenter.fragment.CategoryFragment;
 import cn.ucai.fulicenter.fragment.NewGoodFragment;
+import cn.ucai.fulicenter.fragment.PersonanCenterFragment;
 
 public class FuliCenterMainActivity extends BaseActivity {
     TextView mtvCartHint;
@@ -23,12 +24,13 @@ public class FuliCenterMainActivity extends BaseActivity {
     NewGoodFragment mNewGoodFragment;
     BoutiqueFragment mBoutiqueFragment;
     CategoryFragment mCategoryFragment;
+    PersonanCenterFragment mPersonanCenterFragment;
     Fragment[] mFragments;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_fuli_center_main);
-        mFragments = new Fragment[3];
+        mFragments = new Fragment[5];
         initview();
         initFragment();
         getSupportFragmentManager().beginTransaction()
@@ -45,9 +47,11 @@ public class FuliCenterMainActivity extends BaseActivity {
         mNewGoodFragment = new NewGoodFragment();
         mBoutiqueFragment = new BoutiqueFragment();
         mCategoryFragment = new CategoryFragment();
+        mPersonanCenterFragment = new PersonanCenterFragment();
         mFragments[0] = mNewGoodFragment;
         mFragments[1] = mBoutiqueFragment;
         mFragments[2] = mCategoryFragment;
+        mFragments[4] = mPersonanCenterFragment;
     }
 
     private void initview() {

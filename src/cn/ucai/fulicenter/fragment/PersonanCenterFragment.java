@@ -1,0 +1,100 @@
+package cn.ucai.fulicenter.fragment;
+
+import android.content.Context;
+import android.os.Bundle;
+import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.GridView;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
+import android.widget.SimpleAdapter;
+import android.widget.TextView;
+
+import com.android.volley.toolbox.NetworkImageView;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+
+import cn.ucai.fulicenter.FuLiCenterApplication;
+import cn.ucai.fulicenter.R;
+import cn.ucai.fulicenter.activity.FuliCenterMainActivity;
+import cn.ucai.fulicenter.utils.UserUtils;
+
+/**
+ * Created by Administrator on 2016/6/20.
+ */
+public class PersonanCenterFragment extends Fragment{
+    Context mContext;
+    private int[] pic_path = {
+            R.drawable.order_list1,
+            R.drawable.order_list2,
+            R.drawable.order_list3,
+            R.drawable.order_list4,
+            R.drawable.order_list5,};
+    NetworkImageView mivUserAvatar;
+    TextView mtvUserName,mtvCollectCount,mtvSettings;
+    ImageView mivMessage;
+    LinearLayout mLayoutCenterCollet;
+    RelativeLayout mLayoutCenterUserInfo;
+    int mCollectCount;
+    @Nullable
+    @Override
+    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
+                             @Nullable Bundle savedInstanceState) {
+        mContext = getActivity();
+        View layout = View.inflate(mContext, R.layout.fragment_personal_center,null);
+        initView(layout);
+        initData();
+        return layout;
+    }
+
+    private void initData() {
+        mCollectCount = FuLiCenterApplication.getInstance().getCollectCount();
+        mtvCollectCount.setText(""+mCollectCount);
+        if (FuLiCenterApplication.getInstance().getUser()!=null){
+            UserUtils.setCurrentUserAvatar(mivUserAvatar);
+            UserUtils.setCurrentUserBeanNick(mtvUserName);
+        }
+    }
+
+    private void initView(View layout) {
+        mivUserAvatar = (NetworkImageView) layout.findViewById(R.id.iv_user_avatar);
+        mtvUserName = (TextView) layout.findViewById(R.id.tv_user_name);
+        mtvCollectCount = (TextView) layout.findViewById(R.id.tv_collect_count);
+        mtvSettings = (TextView) layout.findViewById(R.id.tv_center_settings);
+        mivMessage = (ImageView) layout.findViewById(R.id.iv_persona_center_msg);
+        mLayoutCenterCollet = (LinearLayout) layout.findViewById(R.id.layout_center_collect);
+        mLayoutCenterUserInfo = (RelativeLayout) layout.findViewById(R.id.center_user_info);
+
+        initOrderList(layout);
+    }
+
+    private void initOrderList(View layout) {
+        GridView mOrderList = (GridView) layout.findViewById(R.id.center_user_order_lis);
+        ArrayList<HashMap<String,Object>> imageList = new ArrayList<HashMap<String,Object>>();
+
+        HashMap<String,Object> map1 = new HashMap<String,Object>();
+        map1.put("image",R.drawable.order_list1);
+        imageList.add(map1);
+        HashMap<String,Object> map2 = new HashMap<String,Object>();
+        map2.put("image",R.drawable.order_list2);
+        imageList.add(map2);
+        HashMap<String,Object> map3 = new HashMap<String,Object>();
+        map3.put("image",R.drawable.order_list3);
+        imageList.add(map3);
+        HashMap<String,Object> map4 = new HashMap<String,Object>();
+        map4.put("image",R.drawable.order_list4);
+        imageList.add(map4);
+        HashMap<String,Object> map5 = new HashMap<String,Object>();
+        map5.put("image",R.drawable.order_list5);
+        imageList.add(map5);
+
+        SimpleAdapter sa = new SimpleAdapter(mContext,imageList,R.layout.simple_grid_item,
+                new String[]{"image"},new int[]{R.id.image});
+        mOrderList.setAdapter(sa);
+    }
+}
