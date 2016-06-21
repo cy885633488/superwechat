@@ -1,6 +1,9 @@
 package cn.ucai.fulicenter.fragment;
 
+import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -21,7 +24,9 @@ import java.util.HashMap;
 
 import cn.ucai.fulicenter.FuLiCenterApplication;
 import cn.ucai.fulicenter.R;
+import cn.ucai.fulicenter.activity.BaseActivity;
 import cn.ucai.fulicenter.activity.FuliCenterMainActivity;
+import cn.ucai.fulicenter.task.DownloadCollectCountTask;
 import cn.ucai.fulicenter.utils.UserUtils;
 
 /**
@@ -49,6 +54,8 @@ public class PersonanCenterFragment extends Fragment{
         View layout = View.inflate(mContext, R.layout.fragment_personal_center,null);
         initView(layout);
         initData();
+        registerCollectCountChangedListener();
+        registerUpdateUserReceiver();
         return layout;
     }
 
@@ -96,5 +103,48 @@ public class PersonanCenterFragment extends Fragment{
         SimpleAdapter sa = new SimpleAdapter(mContext,imageList,R.layout.simple_grid_item,
                 new String[]{"image"},new int[]{R.id.image});
         mOrderList.setAdapter(sa);
+    }
+
+    class CollectCountChangedReceiver extends BroadcastReceiver{
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            initData();
+        }
+    }
+
+    CollectCountChangedReceiver mReceiver;
+
+    private void registerCollectCountChangedListener(){
+        mReceiver = new CollectCountChangedReceiver();
+        IntentFilter filter = new IntentFilter("update_collect_count");
+        mContext.registerReceiver(mReceiver,filter);
+    }
+
+    class UpdateUserChangedReceiver extends BroadcastReceiver{
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            new DownloadCollectCountTask(mContext).execute();
+            initData();
+        }
+    }
+
+    UpdateUserChangedReceiver mUserReceiver;
+
+    private void registerUpdateUserReceiver(){
+        IntentFilter filter = new IntentFilter("update_user");
+        mContext.registerReceiver(mUserReceiver,filter);
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        if (mReceiver!=null){
+            mContext.unregisterReceiver(mReceiver);
+        }
+        if (mUserReceiver!=null){
+            mContext.unregisterReceiver(mUserReceiver);
+        }
     }
 }
