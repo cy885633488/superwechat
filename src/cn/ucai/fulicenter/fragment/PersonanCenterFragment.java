@@ -60,7 +60,6 @@ public class PersonanCenterFragment extends Fragment{
         initView(layout);
         initData();
         setListener();
-        new DownloadCollectCountTask(mContext).execute();
         return layout;
     }
 
