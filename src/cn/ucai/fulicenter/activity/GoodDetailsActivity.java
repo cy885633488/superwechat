@@ -1,8 +1,10 @@
 package cn.ucai.fulicenter.activity;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.PersistableBundle;
+import android.util.Log;
 import android.view.View;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
@@ -24,6 +26,7 @@ import cn.ucai.fulicenter.bean.MessageBean;
 import cn.ucai.fulicenter.bean.User;
 import cn.ucai.fulicenter.data.ApiParams;
 import cn.ucai.fulicenter.data.GsonRequest;
+import cn.ucai.fulicenter.task.DownloadCollectCountTask;
 import cn.ucai.fulicenter.utils.ImageUtils;
 import cn.ucai.fulicenter.utils.Utils;
 import cn.ucai.fulicenter.view.DisplayUtils;
@@ -48,6 +51,8 @@ public class GoodDetailsActivity extends BaseActivity {
 
     // 当前颜色值
     int mCurrentColor;
+    boolean isCollect;
+    int actionCollect;
     @Override
     protected void onCreate(Bundle arg0) {
         super.onCreate(arg0);
@@ -55,6 +60,68 @@ public class GoodDetailsActivity extends BaseActivity {
         mContext = this;
         initView();
         initData();
+        setListener();
+    }
+
+    private void setListener() {
+        setCollectListener();
+    }
+
+    private void setCollectListener() {
+        mivCollect.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                User user = FuLiCenterApplication.getInstance().getUser();
+                if (user!=null){
+                    try {
+                        String path;
+                        if (isCollect) {
+                            actionCollect = I.ACTION_DEL_COLLECT;
+                            path = new ApiParams()
+                                    .with(I.Collect.USER_NAME, user.getMUserName())
+                                    .with(I.Collect.GOODS_ID,mGoodsId+"")
+                                    .getRequestUrl(I.REQUEST_DELETE_COLLECT);
+                        }else {
+                            actionCollect = I.ACTION_ADD_COLLECT;
+                            path = new ApiParams()
+                                    .with(I.Collect.USER_NAME,user.getMUserName())
+                                    .with(I.Collect.GOODS_ID,mGoodsId+"")
+                                    .with(I.Collect.GOODS_NAME,mGoodDetailsBean.getGoodsName())
+                                    .with(I.Collect.GOODS_ENGLISH_NAME,mGoodDetailsBean.getGoodsEnglishName())
+                                    .with(I.Collect.GOODS_THUMB,mGoodDetailsBean.getGoodsThumb())
+                                    .with(I.Collect.GOODS_IMG,mGoodDetailsBean.getGoodsImg())
+                                    .with(I.Collect.ADD_TIME,mGoodDetailsBean.getAddTime()+"")
+                                    .getRequestUrl(I.REQUEST_ADD_COLLECT);
+                        }
+                        executeRequest(new GsonRequest<MessageBean>(path,MessageBean.class,
+                                responseSetCollectListener(),errorListener()));
+                    }catch (Exception e){
+                        e.printStackTrace();
+                    }
+                }else {
+                    startActivity(new Intent(GoodDetailsActivity.this,LoginActivity.class));
+                }
+            }
+        });
+    }
+
+    private Response.Listener<MessageBean> responseSetCollectListener() {
+        return new Response.Listener<MessageBean>() {
+            @Override
+            public void onResponse(MessageBean messageBean) {
+                if (messageBean.isSuccess()){
+                    if (actionCollect==I.ACTION_ADD_COLLECT){
+                        isCollect = true;
+                        mivCollect.setImageResource(R.drawable.bg_collect_out);
+                    }else if (actionCollect==I.ACTION_DEL_COLLECT){
+                        isCollect = false;
+                        mivCollect.setImageResource(R.drawable.bg_collect_in);
+                    }
+                    new DownloadCollectCountTask(mContext).execute();
+                }
+                Utils.showToast(mContext,messageBean.getMsg(),Toast.LENGTH_SHORT);
+            }
+        };
     }
 
     private void initData() {
@@ -167,6 +234,7 @@ public class GoodDetailsActivity extends BaseActivity {
                 e.printStackTrace();
             }
         }else {
+            isCollect = false;
             mivCollect.setImageResource(R.drawable.bg_collect_in);
         }
     }
@@ -176,8 +244,10 @@ public class GoodDetailsActivity extends BaseActivity {
             @Override
             public void onResponse(MessageBean messageBean) {
                 if (messageBean.isSuccess()){
+                    isCollect = true;
                     mivCollect.setImageResource(R.drawable.bg_collect_out);
                 }else {
+                    isCollect = false;
                     mivCollect.setImageResource(R.drawable.bg_collect_in);
                 }
             }
