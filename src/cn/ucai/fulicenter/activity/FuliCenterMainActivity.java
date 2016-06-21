@@ -1,14 +1,18 @@
 package cn.ucai.fulicenter.activity;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
+import android.util.Log;
 import android.view.View;
 import android.widget.RadioButton;
 import android.widget.TextView;
 
+import cn.ucai.fulicenter.FuLiCenterApplication;
 import cn.ucai.fulicenter.R;
+import cn.ucai.fulicenter.bean.User;
 import cn.ucai.fulicenter.fragment.BoutiqueFragment;
 import cn.ucai.fulicenter.fragment.CategoryFragment;
 import cn.ucai.fulicenter.fragment.NewGoodFragment;
@@ -84,7 +88,12 @@ public class FuliCenterMainActivity extends BaseActivity {
                 index = 3;
                 break;
             case R.id.rb_person_center:
-                index = 4;
+                User user = FuLiCenterApplication.getInstance().getUser();
+                if (user==null){
+                    startActivity(new Intent(this,LoginActivity.class));
+                }else{
+                    index = 4;
+                }
                 break;
         }
         if (currentTabIndex!=index){
@@ -106,6 +115,26 @@ public class FuliCenterMainActivity extends BaseActivity {
             }else {
                 radios[i].setChecked(false);
             }
+        }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (FuLiCenterApplication.getInstance().getUser()!=null){
+            index = 4;
+            if (currentTabIndex!=index){
+                FragmentTransaction trx = getSupportFragmentManager().beginTransaction();
+                trx.hide(mFragments[currentTabIndex]);
+                if (!mFragments[index].isAdded()) {
+                    trx.add(cn.ucai.fulicenter.R.id.fragment_container, mFragments[index]);
+                }
+                trx.show(mFragments[index]).commit();
+                setRadioChecked(index);
+                currentTabIndex = index;
+            }
+        }else {
+            setRadioChecked(index);
         }
     }
 }

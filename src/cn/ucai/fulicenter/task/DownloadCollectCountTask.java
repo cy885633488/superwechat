@@ -2,6 +2,7 @@ package cn.ucai.fulicenter.task;
 
 import android.content.Context;
 import android.content.Intent;
+import android.util.Log;
 
 import com.android.volley.Response;
 
@@ -47,7 +48,7 @@ public class DownloadCollectCountTask extends BaseActivity{
         return new Response.Listener<MessageBean>() {
             @Override
             public void onResponse(MessageBean messageBean) {
-                if (messageBean!=null && messageBean.isSuccess()){
+                if (messageBean.isSuccess()){
                     int count = Integer.parseInt(messageBean.getMsg());
                     FuLiCenterApplication.getInstance().setCollectCount(count);
                 }else {

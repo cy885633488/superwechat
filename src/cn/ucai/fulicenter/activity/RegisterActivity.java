@@ -76,6 +76,16 @@ public class RegisterActivity extends BaseActivity {
         setRegisterListener();
 //        setLoginListener();
         setOnAvatarListener();
+        setBaceListener();
+    }
+
+    private void setBaceListener() {
+        findViewById(R.id.register_back).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
     }
 
     private void setOnAvatarListener() {
