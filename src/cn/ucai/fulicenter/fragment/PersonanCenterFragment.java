@@ -28,6 +28,7 @@ import cn.ucai.fulicenter.FuLiCenterApplication;
 import cn.ucai.fulicenter.R;
 import cn.ucai.fulicenter.activity.BaseActivity;
 import cn.ucai.fulicenter.activity.FuliCenterMainActivity;
+import cn.ucai.fulicenter.activity.SettingsActivity;
 import cn.ucai.fulicenter.task.DownloadCollectCountTask;
 import cn.ucai.fulicenter.utils.UserUtils;
 
@@ -48,18 +49,39 @@ public class PersonanCenterFragment extends Fragment{
     LinearLayout mLayoutCenterCollet;
     RelativeLayout mLayoutCenterUserInfo;
     int mCollectCount;
+    ViewOnChilcListener listener;
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
         mContext = getActivity();
         View layout = View.inflate(mContext, R.layout.fragment_personal_center,null);
+        listener = new ViewOnChilcListener();
         initView(layout);
         initData();
+        setListener();
         new DownloadCollectCountTask(mContext).execute();
+        return layout;
+    }
+
+    private void setListener() {
         registerCollectCountChangedListener();
         registerUpdateUserReceiver();
-        return layout;
+        mtvSettings.setOnClickListener(listener);
+        mLayoutCenterUserInfo.setOnClickListener(listener);
+    }
+
+    class ViewOnChilcListener implements View.OnClickListener{
+
+        @Override
+        public void onClick(View v) {
+            switch (v.getId()){
+                case R.id.tv_center_settings:
+                case R.id.center_user_info:
+                    startActivity(new Intent(mContext,SettingsActivity.class));
+                    break;
+            }
+        }
     }
 
     private void initData() {
