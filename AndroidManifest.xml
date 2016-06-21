@@ -77,6 +77,12 @@
             android:screenOrientation="portrait"
             android:theme="@style/horizontal_slide">
         </activity>
+        <!--我的收藏宝贝页面-->
+        <activity
+            android:name=".activity.CollectActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/horizontal_slide">
+        </activity>
         <!--设置页面-->
         <activity
             android:name=".activity.SettingsActivity"
