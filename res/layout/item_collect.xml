@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content">
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/white"
+        android:id="@+id/layout_collect">
+
+        <com.android.volley.toolbox.NetworkImageView
+            android:id="@+id/niv_collect_thumb"
+            android:layout_width="match_parent"
+            android:layout_height="250dp"
+            android:src="@drawable/nopic"/>
+        <TextView
+            android:id="@+id/collect_name"
+            android:layout_width="150dp"
+            android:layout_height="wrap_content"
+            android:text="商品名称商品名称商品名称商品名称商品名称商品名称商品名称商品名称"/>
+    </LinearLayout>
+    <ImageView
+        android:id="@+id/collect_delete"
+        android:layout_width="26dp"
+        android:layout_height="26dp"
+        android:src="@drawable/delete"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentTop="true"/>
+</RelativeLayout>
