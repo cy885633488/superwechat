@@ -17,6 +17,7 @@ import cn.ucai.fulicenter.FuLiCenterApplication;
 import cn.ucai.fulicenter.R;
 import cn.ucai.fulicenter.bean.User;
 import cn.ucai.fulicenter.fragment.BoutiqueFragment;
+import cn.ucai.fulicenter.fragment.CartFragment;
 import cn.ucai.fulicenter.fragment.CategoryFragment;
 import cn.ucai.fulicenter.fragment.NewGoodFragment;
 import cn.ucai.fulicenter.fragment.PersonanCenterFragment;
@@ -33,6 +34,7 @@ public class FuliCenterMainActivity extends BaseActivity {
     BoutiqueFragment mBoutiqueFragment;
     CategoryFragment mCategoryFragment;
     PersonanCenterFragment mPersonanCenterFragment;
+    CartFragment mCartFragment;
     Fragment[] mFragments;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,6 +49,10 @@ public class FuliCenterMainActivity extends BaseActivity {
                 .hide(mBoutiqueFragment)
                 .add(cn.ucai.fulicenter.R.id.fragment_container, mCategoryFragment)
                 .hide(mCategoryFragment)
+                .add(cn.ucai.fulicenter.R.id.fragment_container, mCartFragment)
+                .hide(mCartFragment)
+                .add(cn.ucai.fulicenter.R.id.fragment_container, mPersonanCenterFragment)
+                .hide(mPersonanCenterFragment)
                 .show(mNewGoodFragment)
                 .commit();
         registerUpdateCartReceiver();
@@ -56,10 +62,12 @@ public class FuliCenterMainActivity extends BaseActivity {
         mNewGoodFragment = new NewGoodFragment();
         mBoutiqueFragment = new BoutiqueFragment();
         mCategoryFragment = new CategoryFragment();
+        mCartFragment = new CartFragment();
         mPersonanCenterFragment = new PersonanCenterFragment();
         mFragments[0] = mNewGoodFragment;
         mFragments[1] = mBoutiqueFragment;
         mFragments[2] = mCategoryFragment;
+        mFragments[3] = mCartFragment;
         mFragments[4] = mPersonanCenterFragment;
     }
 
