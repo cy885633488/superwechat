@@ -1,7 +1,10 @@
 package cn.ucai.fulicenter.activity;
 
 import android.app.Activity;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
@@ -17,6 +20,7 @@ import cn.ucai.fulicenter.fragment.BoutiqueFragment;
 import cn.ucai.fulicenter.fragment.CategoryFragment;
 import cn.ucai.fulicenter.fragment.NewGoodFragment;
 import cn.ucai.fulicenter.fragment.PersonanCenterFragment;
+import cn.ucai.fulicenter.utils.Utils;
 
 public class FuliCenterMainActivity extends BaseActivity {
     TextView mtvCartHint;
@@ -45,6 +49,7 @@ public class FuliCenterMainActivity extends BaseActivity {
                 .hide(mCategoryFragment)
                 .show(mNewGoodFragment)
                 .commit();
+        registerUpdateCartReceiver();
     }
 
     private void initFragment() {
@@ -71,6 +76,7 @@ public class FuliCenterMainActivity extends BaseActivity {
         radios[2] = mrbCategory;
         radios[3] = mrbCart;
         radios[4] = mrbPersonCenter;
+        mtvCartHint.setVisibility(View.GONE);
     }
 
     public void onRadioClicked(View view){
@@ -147,6 +153,40 @@ public class FuliCenterMainActivity extends BaseActivity {
             trx.show(mFragments[index]).commit();
             setRadioChecked(index);
             currentTabIndex = index;
+        }
+    }
+
+    class UpdateCartReceiver extends BroadcastReceiver{
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            int count = Utils.sumCartCount();
+            Log.i("main","count="+count);
+            if (FuLiCenterApplication.getInstance().getUser()!=null){
+                if (count>0){
+                    mtvCartHint.setVisibility(View.VISIBLE);
+                    mtvCartHint.setText(""+count);
+                }else {
+                    mtvCartHint.setVisibility(View.GONE);
+                }
+            }else {
+                mtvCartHint.setVisibility(View.GONE);
+            }
+        }
+    }
+    UpdateCartReceiver mReceiver;
+    public void registerUpdateCartReceiver(){
+        mReceiver = new UpdateCartReceiver();
+        IntentFilter filter = new IntentFilter("update_cart_list");
+        filter.addAction("update_user");
+        registerReceiver(mReceiver,filter);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (mReceiver!=null){
+            unregisterReceiver(mReceiver);
         }
     }
 }

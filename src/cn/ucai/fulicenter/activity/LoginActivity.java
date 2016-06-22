@@ -58,6 +58,7 @@ import cn.ucai.fulicenter.db.EMUserDao;
 import cn.ucai.fulicenter.db.UserDao;
 import cn.ucai.fulicenter.domain.EMUser;
 import cn.ucai.fulicenter.listener.OnSetAvatarListener;
+import cn.ucai.fulicenter.task.DownloadCartListTask;
 import cn.ucai.fulicenter.task.DownloadCollectCountTask;
 import cn.ucai.fulicenter.task.DownloadContactListTask;
 import cn.ucai.fulicenter.utils.CommonUtils;
@@ -211,12 +212,13 @@ public class LoginActivity extends BaseActivity {
     private void loginAppServer() {
         UserDao dao = new UserDao(mContext);
         User user = dao.findUserByUserName(currentUsername);
+        FuLiCenterApplication.getInstance().setUser(user);
         if (user!=null){
-            if (user.getMUserPassword().equals(MD5.getData(currentPassword))){
+            if (MD5.getData(user.getMUserPassword()).equals(MD5.getData(currentPassword))){
                 loginSuccess();
             } else {
                 pd.dismiss();
-                Toast.makeText(getApplicationContext(), cn.ucai.fulicenter.R.string.login_failure_failed, Toast.LENGTH_LONG).show();
+                Utils.showToast(mContext,Utils.getResourceString(mContext,user.getMsg()),Toast.LENGTH_LONG);
             }
         } else {
             // http://10.0.2.2:8080/SuperWeChatServer/Server?request=login&m_user_name=&m_user_password=  用户登录地址
@@ -289,6 +291,7 @@ public class LoginActivity extends BaseActivity {
                 @Override
                 public void run() {
                     new DownloadContactListTask(mContext,currentUsername).execute();
+                    new DownloadCartListTask(mContext,currentUsername,0,I.PAGE_SIZE_DEFAULT).execute();
                 }
             });
             initializeContacts();

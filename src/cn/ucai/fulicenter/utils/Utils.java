@@ -1,13 +1,16 @@
 package cn.ucai.fulicenter.utils;
 
 import android.content.Context;
+import android.util.Log;
 import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import cn.ucai.fulicenter.FuLiCenterApplication;
 import cn.ucai.fulicenter.I;
+import cn.ucai.fulicenter.bean.CartBean;
 
 /**
  * Created by clawpo on 16/3/28.
@@ -64,5 +67,17 @@ public class Utils {
     public static int dp2px(Context context,int dp){
         int density = (int) context.getResources().getDisplayMetrics().density;
         return dp*density;
+    }
+
+    public static int sumCartCount(){
+        Log.i("main","sumcount=");
+        int count = 0;
+        ArrayList<CartBean> cartList = FuLiCenterApplication.getInstance().getCartList();
+        Log.i("main","cartList="+cartList.size());
+        for (CartBean cart:cartList){
+            count += cart.getCount();
+            Log.i("main","sumcount="+count);
+        }
+        return count;
     }
 }
