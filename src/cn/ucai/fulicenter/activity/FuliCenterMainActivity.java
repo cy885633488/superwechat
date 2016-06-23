@@ -150,7 +150,7 @@ public class FuliCenterMainActivity extends BaseActivity {
         if (action!=null && FuLiCenterApplication.getInstance().getUser()!=null){
             if (action.equals("personal")) {
                 index = 4;
-            }if (action.equals("cart")){
+            }else if (action.equals("cart")){
                 index = 3;
             }
         }else {
