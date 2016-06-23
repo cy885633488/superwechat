@@ -321,7 +321,7 @@ public class LoginActivity extends BaseActivity {
         if (action!=null) {
             sendStickyBroadcast(new Intent("update_user"));
             Intent intent = new Intent(LoginActivity.this,
-                    FuliCenterMainActivity.class).putExtra("action","login");
+                    FuliCenterMainActivity.class).putExtra("action",action);
             startActivity(intent);
         }
         finish();

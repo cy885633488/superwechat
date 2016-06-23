@@ -36,6 +36,7 @@ public class FuliCenterMainActivity extends BaseActivity {
     PersonanCenterFragment mPersonanCenterFragment;
     CartFragment mCartFragment;
     Fragment[] mFragments;
+    User user;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -49,10 +50,6 @@ public class FuliCenterMainActivity extends BaseActivity {
                 .hide(mBoutiqueFragment)
                 .add(cn.ucai.fulicenter.R.id.fragment_container, mCategoryFragment)
                 .hide(mCategoryFragment)
-                .add(cn.ucai.fulicenter.R.id.fragment_container, mCartFragment)
-                .hide(mCartFragment)
-                .add(cn.ucai.fulicenter.R.id.fragment_container, mPersonanCenterFragment)
-                .hide(mPersonanCenterFragment)
                 .show(mNewGoodFragment)
                 .commit();
         registerUpdateCartReceiver();
@@ -99,18 +96,26 @@ public class FuliCenterMainActivity extends BaseActivity {
                 index = 2;
                 break;
             case R.id.rb_cart:
-                index = 3;
+                user = FuLiCenterApplication.getInstance().getUser();
+                if (user==null){
+                    startActivity(new Intent(this,LoginActivity.class).putExtra("action","cart"));
+                }else{
+                    index = 3;
+                }
                 break;
             case R.id.rb_person_center:
-                User user = FuLiCenterApplication.getInstance().getUser();
+                user = FuLiCenterApplication.getInstance().getUser();
                 if (user==null){
-                    startActivity(new Intent(this,LoginActivity.class).putExtra("action","login"));
+                    startActivity(new Intent(this,LoginActivity.class).putExtra("action","personal"));
                 }else{
                     index = 4;
                 }
                 break;
         }
+        Log.i("main",index+"="+currentTabIndex);
         if (currentTabIndex!=index){
+            Log.i("main","index="+index);
+            Log.i("main","currentTabIndex="+currentTabIndex);
             FragmentTransaction trx = getSupportFragmentManager().beginTransaction();
             trx.hide(mFragments[currentTabIndex]);
             if (!mFragments[index].isAdded()) {
@@ -143,8 +148,10 @@ public class FuliCenterMainActivity extends BaseActivity {
         super.onResume();
         String action = getIntent().getStringExtra("action");
         if (action!=null && FuLiCenterApplication.getInstance().getUser()!=null){
-            if (action.equals("login")) {
+            if (action.equals("personal")) {
                 index = 4;
+            }if (action.equals("cart")){
+                index = 3;
             }
         }else {
             setRadioChecked(index);

@@ -38,7 +38,7 @@ public class CartFragment extends Fragment {
     /** 下拉刷新控件*/
     SwipeRefreshLayout mSwipeRefreshLayout;
     RecyclerView mRecyclerView;
-    TextView mtvHint;
+    TextView mtvHint,mtvCurrencyPrice,mtvSavePrice;
     LinearLayoutManager mLinearLayoutManager;
 
     @Nullable
@@ -119,6 +119,7 @@ public class CartFragment extends Fragment {
             ArrayList<CartBean> cartList = FuLiCenterApplication.getInstance().getCartList();
             mCartList.clear();
             mCartList.addAll(cartList);
+            sumCartPrice();
             mContext.executeRequest(new GsonRequest<CartBean[]>(path,
                     CartBean[].class, responseDownloadCartListener(),
                     mContext.errorListener()));
@@ -179,5 +180,29 @@ public class CartFragment extends Fragment {
         mRecyclerView.setLayoutManager(mLinearLayoutManager);
         mAdapter = new CartAdapter(mContext, mCartList);
         mRecyclerView.setAdapter(mAdapter);
+        mtvCurrencyPrice = (TextView) layout.findViewById(R.id.tv_cart_good_price_zonghe);
+        mtvSavePrice = (TextView) layout.findViewById(R.id.tv_cart_shengqian);
+    }
+
+    public void sumCartPrice(){
+        int rankPrice = 0;
+        int currencyPrice = 0;
+        if (mCartList!=null && mCartList.size()>0){
+            for (CartBean cart:mCartList){
+                if (cart!=null && cart.isChecked()){
+                    currencyPrice += cart.getCount()*convertPrice(cart.getGoods().getCurrencyPrice());
+                    rankPrice += cart.getCount()*convertPrice(cart.getGoods().getRankPrice());
+                }
+            }
+            int savePrice = currencyPrice-rankPrice;
+            mtvCurrencyPrice.setText("合计：￥"+currencyPrice);
+            mtvSavePrice.setText("节省：￥"+savePrice);
+        }
+    }
+
+    private int convertPrice(String price){
+        price = price.substring(price.indexOf("￥")+1);
+        int p1 = Integer.parseInt(price);
+        return p1;
     }
 }
