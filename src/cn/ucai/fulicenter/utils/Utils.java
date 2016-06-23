@@ -11,6 +11,8 @@ import java.util.List;
 import cn.ucai.fulicenter.FuLiCenterApplication;
 import cn.ucai.fulicenter.I;
 import cn.ucai.fulicenter.bean.CartBean;
+import cn.ucai.fulicenter.bean.GoodDetailsBean;
+import cn.ucai.fulicenter.task.UpdateCartTask;
 
 /**
  * Created by clawpo on 16/3/28.
@@ -79,5 +81,41 @@ public class Utils {
             Log.i("main","sumcount="+count);
         }
         return count;
+    }
+
+    public static void delCart(Context context,GoodDetailsBean good) {
+        ArrayList<CartBean> cartList = FuLiCenterApplication.getInstance().getCartList();
+        boolean isExist = false;
+        CartBean mCart = null;
+        for (int i=0;i<cartList.size();i++){
+            CartBean cart = cartList.get(i);
+            if (cart.getGoodsId()==good.getGoodsId()){
+                cart.setCount(cart.getCount()-1);
+                isExist = true;
+                mCart = cart;
+            }
+        }
+        if (isExist){
+            new UpdateCartTask(context,mCart).execute();
+        }
+    }
+
+    public static void addCart(Context context,GoodDetailsBean good) {
+        ArrayList<CartBean> cartList = FuLiCenterApplication.getInstance().getCartList();
+        boolean isExist = false;
+        CartBean mCart = null;
+        for (int i=0;i<cartList.size();i++){
+            CartBean cart = cartList.get(i);
+            if (cart.getGoodsId()==good.getGoodsId()){
+                cart.setCount(cart.getCount()+1);
+                isExist = true;
+                mCart = cart;
+            }
+        }
+        if (!isExist){
+            mCart = new CartBean(0,FuLiCenterApplication.getInstance().getUserName(),
+                    good.getGoodsId(),1,true);
+        }
+        new UpdateCartTask(context,mCart).execute();
     }
 }

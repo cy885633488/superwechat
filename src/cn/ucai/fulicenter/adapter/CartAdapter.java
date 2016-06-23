@@ -17,6 +17,7 @@ import cn.ucai.fulicenter.R;
 import cn.ucai.fulicenter.bean.CartBean;
 import cn.ucai.fulicenter.bean.GoodDetailsBean;
 import cn.ucai.fulicenter.utils.ImageUtils;
+import cn.ucai.fulicenter.utils.Utils;
 
 /**
  * Created by Administrator on 2016/6/22.
@@ -59,6 +60,9 @@ public class CartAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         cartHolder.tvCartGoodNum.setText("("+cart.getCount()+")");
         cartHolder.cbCart.setChecked(cart.isChecked());
         ImageUtils.setNewGoodThumb(good.getGoodsThumb(),cartHolder.nivGoodThumb);
+        DelAddCartListener listener = new DelAddCartListener(good);
+        cartHolder.ivCartAdd.setOnClickListener(listener);
+        cartHolder.ivCartDel.setOnClickListener(listener);
     }
 
     @Override
@@ -97,6 +101,26 @@ public class CartAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             tvCartGoodNum = (TextView) itemView.findViewById(R.id.tv_cart_good_num);
             ivCartAdd = (ImageView) itemView.findViewById(R.id.iv_cart_add);
             ivCartDel = (ImageView) itemView.findViewById(R.id.iv_cart_del);
+        }
+    }
+
+    class DelAddCartListener implements View.OnClickListener{
+        GoodDetailsBean good;
+
+        public DelAddCartListener(GoodDetailsBean good) {
+            this.good = good;
+        }
+
+        @Override
+        public void onClick(View v) {
+            switch (v.getId()){
+                case R.id.iv_cart_del:
+                    Utils.delCart(mContext,good);
+                    break;
+                case R.id.iv_cart_add:
+                    Utils.addCart(mContext,good);
+                    break;
+            }
         }
     }
 }
