@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -16,6 +17,7 @@ import java.util.ArrayList;
 import cn.ucai.fulicenter.R;
 import cn.ucai.fulicenter.bean.CartBean;
 import cn.ucai.fulicenter.bean.GoodDetailsBean;
+import cn.ucai.fulicenter.task.UpdateCartTask;
 import cn.ucai.fulicenter.utils.ImageUtils;
 import cn.ucai.fulicenter.utils.Utils;
 
@@ -49,7 +51,7 @@ public class CartAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
-        CartBean cart = mCartList.get(position);
+        final CartBean cart = mCartList.get(position);
         CartViewHolder cartHolder = (CartViewHolder) holder;
         GoodDetailsBean good = cart.getGoods();
         if (good==null){
@@ -63,6 +65,14 @@ public class CartAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         DelAddCartListener listener = new DelAddCartListener(good);
         cartHolder.ivCartAdd.setOnClickListener(listener);
         cartHolder.ivCartDel.setOnClickListener(listener);
+
+        cartHolder.cbCart.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                cart.setChecked(isChecked);
+                new UpdateCartTask(mContext,cart).execute();
+            }
+        });
     }
 
     @Override

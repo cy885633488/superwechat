@@ -1,7 +1,9 @@
 package cn.ucai.fulicenter.activity;
 
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.os.PersistableBundle;
 import android.util.Log;
@@ -10,17 +12,21 @@ import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.Response;
 import com.android.volley.toolbox.NetworkImageView;
 
+import java.util.ArrayList;
+
 import cn.ucai.fulicenter.D;
 import cn.ucai.fulicenter.FuLiCenterApplication;
 import cn.ucai.fulicenter.I;
 import cn.ucai.fulicenter.R;
 import cn.ucai.fulicenter.bean.AlbumBean;
+import cn.ucai.fulicenter.bean.CartBean;
 import cn.ucai.fulicenter.bean.GoodDetailsBean;
 import cn.ucai.fulicenter.bean.MessageBean;
 import cn.ucai.fulicenter.bean.User;
@@ -45,7 +51,7 @@ public class GoodDetailsActivity extends BaseActivity {
     FlowIndicator mFlowIndicator;
     // 显示颜色的容器布局
     LinearLayout mLinearColors;
-    ImageView mivCollect,mivAddCart,mivShare;
+    ImageView mivCollect,mivShare,mivAddCart;
     TextView mtvCartCount,tvGoodName,tvGoodEnglishName,tvShopPrice,tvCurrencyPrice;
     WebView wvGoodBrief;
 
@@ -65,6 +71,18 @@ public class GoodDetailsActivity extends BaseActivity {
 
     private void setListener() {
         setCollectListener();
+        setAddCartListener();
+        registerUpdateCartCountReceiver();
+    }
+
+    private void setAddCartListener() {
+        Log.i("main","setAddCartListener");
+        mivAddCart.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Utils.addCart(mContext,mGoodDetailsBean);
+            }
+        });
     }
 
     private void setCollectListener() {
@@ -217,6 +235,17 @@ public class GoodDetailsActivity extends BaseActivity {
     protected void onResume() {
         super.onResume();
         initCollectStatus();
+        initCartCountStatus();
+    }
+
+    private void initCartCountStatus() {
+        int count = Utils.sumCartCount();
+        if (count>0){
+            mtvCartCount.setVisibility(View.VISIBLE);
+            mtvCartCount.setText(""+count);
+        }else {
+            mtvCartCount.setVisibility(View.GONE);
+        }
     }
 
     private void initCollectStatus() {
@@ -252,5 +281,27 @@ public class GoodDetailsActivity extends BaseActivity {
                 }
             }
         };
+    }
+
+    class UpdateCartCountReceiver extends BroadcastReceiver{
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            initCartCountStatus();
+        }
+    }
+    UpdateCartCountReceiver mReceiver;
+    public void registerUpdateCartCountReceiver(){
+        mReceiver = new UpdateCartCountReceiver();
+        IntentFilter filter = new IntentFilter("update_cart");
+        registerReceiver(mReceiver,filter);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (mReceiver!=null){
+            unregisterReceiver(mReceiver);
+        }
     }
 }
